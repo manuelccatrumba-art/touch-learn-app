@@ -46,7 +46,8 @@ export type FlashCardCategory =
   | 'correspondence'
   | 'shopping'
   | 'health'
-  | 'technology';
+  | 'technology'
+  | 'negotiation';
 
 export interface GrammarExercise {
   id: string;

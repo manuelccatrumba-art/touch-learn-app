@@ -1,6 +1,6 @@
 import { CEFRLevel } from '../types';
 
-export type CultureType = 'idiom' | 'slang' | 'movie' | 'music';
+export type CultureType = 'idiom' | 'slang' | 'movie' | 'music' | 'pronunciation' | 'usage';
 
 export interface CultureNugget {
   id: string;
@@ -17,6 +17,8 @@ export const CULTURE_TYPE_LABELS: Record<CultureType, { title: string; emoji: st
   slang: { title: 'Gírias Modernas', emoji: '🔥', color: '#EC4899' },
   movie: { title: 'Frases de Filmes', emoji: '🎬', color: '#5FA8D3' },
   music: { title: 'Música', emoji: '🎵', color: '#6FCF97' },
+  pronunciation: { title: 'Pronúncia', emoji: '👄', color: '#F87171' },
+  usage: { title: 'Americano vs Britânico', emoji: '🌎', color: '#A78BFA' },
 };
 
 export const CULTURE_NUGGETS: CultureNugget[] = [
@@ -65,4 +67,26 @@ export const CULTURE_NUGGETS: CultureNugget[] = [
   { id: 'mu6', type: 'music', level: 'A2', phrase: 'Imagine', source: 'John Lennon', translation: 'Imagina', explanation: 'Imperativo simples usado para convidar o ouvinte a visualizar algo — uma das formas mais diretas de pedir algo em inglês.' },
   { id: 'mu7', type: 'music', level: 'B1', phrase: "Don't Stop Believin'", source: 'Journey', translation: 'Não Pares de Acreditar', explanation: '"Believin\'" é a forma informal/cantada de "believing" — comum em letras de música, mas evita-se na escrita formal.' },
   { id: 'mu8', type: 'music', level: 'B1', phrase: 'Bridge Over Troubled Water', source: 'Simon & Garfunkel', translation: 'Ponte Sobre Águas Turbulentas', explanation: 'Metáfora com substantivo composto ("troubled water") — "troubled" descreve algo agitado/difícil, não só a água.' },
+
+  // === PRONÚNCIA — pares mínimos e erros comuns de lusófonos ===
+  { id: 'pr1', type: 'pronunciation', level: 'A1', phrase: 'Think vs Sink', translation: 'Pensar vs Afundar', explanation: 'O som "th" /θ/ não existe em português — a língua toca de leve nos dentes da frente. Trocar por "s" muda a palavra completamente. Toca em "ouvir" e repete devagar.' },
+  { id: 'pr2', type: 'pronunciation', level: 'A2', phrase: 'Ship vs Sheep', translation: 'Navio vs Ovelha', explanation: 'Vogal curta /ɪ/ em "ship" vs vogal longa /iː/ em "sheep". Para lusófonos ambas soam como "i", mas em inglês a duração da vogal muda o significado.' },
+  { id: 'pr3', type: 'pronunciation', level: 'A2', phrase: 'Live vs Leave', translation: 'Viver/Morar vs Partir', explanation: 'O mesmo padrão de "ship/sheep": vogal curta vs vogal longa. "I live here" (moro aqui) e "I leave now" (parto agora) parecem iguais mas não são.' },
+  { id: 'pr4', type: 'pronunciation', level: 'A2', phrase: 'Very vs Berry', translation: 'Muito vs Baga (fruta)', explanation: 'O som /v/ em inglês usa os dentes de cima a tocar o lábio inferior; em português muitas vezes soa como "b". Sente a vibração dos dentes ao dizer "very".' },
+  { id: 'pr5', type: 'pronunciation', level: 'A2', phrase: 'Right vs Light', translation: 'Direita vs Luz', explanation: 'O "r" inglês não vibra como em português — a língua não toca em lado nenhum. O "l" é mais suave, com a ponta da língua atrás dos dentes. Trocar os dois é um erro clássico de lusófonos.' },
+  { id: 'pr6', type: 'pronunciation', level: 'B1', phrase: 'Work vs Walk', translation: 'Trabalhar vs Caminhar', explanation: 'O "r" de "work" curva a língua para trás (som retroflexo); "walk" não tem esse "r" — o "l" é seguido de um "w" quase mudo. Sons e significados completamente diferentes.' },
+  { id: 'pr7', type: 'pronunciation', level: 'B1', phrase: 'World vs Word', translation: 'Mundo vs Palavra', explanation: '"World" tem um "l" antes do "d" que se sente na língua; "word" não tem esse "l". Duas palavras muito confundidas por lusófonos ao ouvir.' },
+  { id: 'pr8', type: 'pronunciation', level: 'B1', phrase: 'Comfortable', translation: 'Confortável', explanation: 'Pronuncia-se "KUMF-ta-bul" (só 3 sílabas faladas), não "com-for-ta-ble" letra por letra — um dos erros mais comuns de lusófonos por seguirem a escrita em vez do som.' },
+  { id: 'pr9', type: 'pronunciation', level: 'B1', phrase: 'The Silent H: hour, honest', translation: 'A hora / Honesto', explanation: 'Em palavras como "hour" e "honest", o "h" é mudo — soa como se começasse por vogal. Por isso dizemos "an hour" (não "a hour") e "an honest man".' },
+  { id: 'pr10', type: 'pronunciation', level: 'B2', phrase: 'PREsent (noun) vs preSENT (verb)', translation: 'Presente (substantivo) vs Apresentar (verbo)', explanation: 'Muitos pares palavra mudam de significado só pela sílaba tónica: substantivo tem ênfase na 1ª sílaba, verbo na 2ª. Não existe algo assim em português — treina ouvir a diferença.' },
+
+  // === AMERICANO vs BRITÂNICO ===
+  { id: 'us1', type: 'usage', level: 'A1', phrase: 'Elevator (AmE) vs Lift (BrE)', translation: 'Elevador', explanation: 'Duas palavras completamente diferentes para a mesma coisa. Inglês americano usa "elevator"; inglês britânico usa "lift".' },
+  { id: 'us2', type: 'usage', level: 'A1', phrase: 'Apartment (AmE) vs Flat (BrE)', translation: 'Apartamento', explanation: 'Nos EUA diz-se "apartment"; no Reino Unido diz-se "flat". Ambas corretas, dependem de qual inglês estás a aprender/usar.' },
+  { id: 'us3', type: 'usage', level: 'A1', phrase: 'Color (AmE) vs Colour (BrE)', translation: 'Cor', explanation: 'A ortografia muda: o inglês americano remove o "u" em várias palavras (color, favorite, organize) que o britânico mantém (colour, favourite, organise).' },
+  { id: 'us4', type: 'usage', level: 'A1', phrase: 'Trash (AmE) vs Rubbish (BrE)', translation: 'Lixo', explanation: '"Trash" é a palavra americana; "rubbish" é a britânica — em BrE, "rubbish" também é gíria para "algo mau/sem sentido".' },
+  { id: 'us5', type: 'usage', level: 'A2', phrase: 'Vacation (AmE) vs Holiday (BrE)', translation: 'Férias', explanation: 'Nos EUA usa-se "vacation" para férias; no Reino Unido, "holiday" — cuidado que "holiday" em AmE normalmente significa só um feriado específico.' },
+  { id: 'us6', type: 'usage', level: 'A1', phrase: 'Cookie (AmE) vs Biscuit (BrE)', translation: 'Biscoito / Bolacha', explanation: 'Atenção: "biscuit" em inglês americano é outra coisa (tipo um pãozinho salgado) — não confundas os dois sistemas.' },
+  { id: 'us7', type: 'usage', level: 'A1', phrase: 'Fall (AmE) vs Autumn (BrE)', translation: 'Outono', explanation: '"Fall" é a forma americana (vem de "the leaves fall"); "autumn" é usada nos dois, mas é a preferida no Reino Unido.' },
+  { id: 'us8', type: 'usage', level: 'A1', phrase: 'Movie (AmE) vs Film (BrE)', translation: 'Filme', explanation: 'Nos EUA vai-se "to the movies"; no Reino Unido vai-se "to the cinema to watch a film".' },
 ];

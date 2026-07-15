@@ -190,6 +190,18 @@ export const FLASHCARD_DATA: FlashCardData[] = [
   { id: 'tec6', category: 'technology', portuguese: 'O sistema travou.', english: 'The system crashed. / It froze.', usage: 'Descrever falha técnica' },
   { id: 'tec7', category: 'technology', portuguese: 'Você está a ver-me bem? Estou sem áudio.', english: "Can you see me okay? I don't have audio.", usage: 'Chamada de vídeo com problemas técnicos' },
   { id: 'tec8', category: 'technology', portuguese: 'Já atualizei o aplicativo.', english: "I've already updated the app.", usage: 'Informar que atualizou o software' },
+
+  // === NEGOCIAÇÃO (inglês de negócios avançado) ===
+  { id: 'ng1', category: 'negotiation', portuguese: 'Vamos encontrar um meio-termo.', english: "Let's find a middle ground.", usage: 'Propondo compromisso numa negociação' },
+  { id: 'ng2', category: 'negotiation', portuguese: 'Isso está fora do nosso orçamento.', english: "That's outside our budget.", usage: 'Recusar uma proposta por motivos financeiros' },
+  { id: 'ng3', category: 'negotiation', portuguese: 'Podemos rever os termos?', english: 'Can we revisit the terms?', usage: 'Pedindo para reabrir uma discussão sobre condições' },
+  { id: 'ng4', category: 'negotiation', portuguese: 'Essa é a nossa oferta final.', english: "That's our final offer.", usage: 'Encerrando uma negociação de preço' },
+  { id: 'ng5', category: 'negotiation', portuguese: 'Precisamos de mais garantias antes de avançar.', english: 'We need more assurances before moving forward.', usage: 'Pedindo segurança antes de fechar um acordo' },
+  { id: 'ng6', category: 'negotiation', portuguese: 'Vamos formalizar isso por escrito.', english: "Let's get that in writing.", usage: 'Pedindo para documentar um acordo verbal' },
+  { id: 'ng7', category: 'negotiation', portuguese: 'Não estamos alinhados nesse ponto.', english: "We're not aligned on that point.", usage: 'Sinalizar discordância de forma profissional' },
+  { id: 'ng8', category: 'negotiation', portuguese: 'Isso é inegociável para nós.', english: "That's a dealbreaker for us.", usage: 'Estabelecer um limite claro numa negociação' },
+  { id: 'ng9', category: 'negotiation', portuguese: 'Estamos dispostos a ceder em alguns pontos.', english: "We're willing to compromise on a few points.", usage: 'Mostrar flexibilidade numa negociação' },
+  { id: 'ng10', category: 'negotiation', portuguese: 'Vamos marcar um follow-up para a próxima semana.', english: "Let's schedule a follow-up for next week.", usage: 'Encerrando uma reunião com próximos passos' },
 ];
 
 export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: string; color: string; level: CEFRLevel }> = {
@@ -208,6 +220,7 @@ export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: 
   shopping: { title: 'Compras', emoji: '🛍️', color: '#EC4899', level: 'A1' },
   health: { title: 'Saúde', emoji: '🏥', color: '#F87171', level: 'A2' },
   technology: { title: 'Tecnologia', emoji: '💻', color: '#38BDF8', level: 'B1' },
+  negotiation: { title: 'Negociação', emoji: '🤝', color: '#D97706', level: 'C1' },
 };
 
 export const QUICK_REPLIES = [
