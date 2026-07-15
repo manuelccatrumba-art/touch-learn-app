@@ -172,7 +172,7 @@ export default function GrammarScreen() {
         <View style={styles.headerInner}>
           <View>
             <Text style={styles.headerTitle}>Gramática</Text>
-            <Text style={styles.headerSub}>15 Notas Linguísticas essenciais</Text>
+            <Text style={styles.headerSub}>{GRAMMAR_NOTES.length} Notas Linguísticas · do A1 ao C1</Text>
           </View>
           <View style={styles.headerBadge}>
             <Text style={styles.headerBadgeText}>NL</Text>
@@ -202,6 +202,7 @@ export default function GrammarScreen() {
                 </View>
               </View>
               <View style={styles.noteRight}>
+                <Text style={styles.levelBadge}>{note.level}</Text>
                 <Text style={styles.exCountBadge}>{exercises.length}</Text>
                 <Ionicons name="chevron-forward" size={16} color={Colors.primary} />
               </View>
@@ -280,6 +281,16 @@ const styles = StyleSheet.create({
   noteTitle: { color: Colors.text, fontSize: 15, fontWeight: '700' },
   noteDesc: { color: Colors.textSecondary, fontSize: 12, marginTop: 2, lineHeight: 16 },
   noteRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  levelBadge: {
+    color: Colors.secondary,
+    fontSize: 10,
+    fontWeight: '800',
+    backgroundColor: Colors.secondary + '22',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
   exCountBadge: {
     color: Colors.primary,
     fontSize: 12,

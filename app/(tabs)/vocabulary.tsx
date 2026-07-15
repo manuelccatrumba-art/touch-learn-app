@@ -228,7 +228,7 @@ export default function VocabularyScreen() {
               onPress={() => setSelectedCategory(cat)}
             >
               <Text style={[styles.filterChipText, selectedCategory === cat && styles.filterChipTextActive]}>
-                {label.emoji} {label.title} ({count})
+                {label.emoji} {label.title} · {label.level} ({count})
               </Text>
             </TouchableOpacity>
           );

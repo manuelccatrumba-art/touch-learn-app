@@ -87,6 +87,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="culture"
+        options={{
+          title: 'Cultura',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="musical-notes" color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="progress"
         options={{
           title: 'Progresso',

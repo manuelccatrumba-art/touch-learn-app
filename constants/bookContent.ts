@@ -1,4 +1,4 @@
-import { FlashCard, FlashCardCategory } from '../types';
+import { CEFRLevel, FlashCard, FlashCardCategory } from '../types';
 
 type FlashCardData = Omit<FlashCard, 'interval' | 'repetitions' | 'easeFactor' | 'nextReview'>;
 
@@ -192,22 +192,22 @@ export const FLASHCARD_DATA: FlashCardData[] = [
   { id: 'tec8', category: 'technology', portuguese: 'Já atualizei o aplicativo.', english: "I've already updated the app.", usage: 'Informar que atualizou o software' },
 ];
 
-export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: string; color: string }> = {
-  greetings: { title: 'Saudações', emoji: '👋', color: '#4F9CF9' },
-  compliments: { title: 'Elogios', emoji: '✨', color: '#A78BFA' },
-  family: { title: 'Família', emoji: '👨‍👩‍👧‍👦', color: '#F59E0B' },
-  relationships: { title: 'Relacionamentos', emoji: '❤️', color: '#EF4444' },
-  business: { title: 'Negócios', emoji: '💼', color: '#22C55E' },
-  travel: { title: 'Viagens', emoji: '✈️', color: '#06B6D4' },
-  emotions: { title: 'Emoções', emoji: '😊', color: '#F472B6' },
-  common: { title: 'Cotidiano', emoji: '💬', color: '#94A3B8' },
-  food: { title: 'Comida', emoji: '🍽️', color: '#FB923C' },
-  nightlife: { title: 'Vida Noturna', emoji: '🌙', color: '#8B5CF6' },
-  professional: { title: 'Profissional', emoji: '🎯', color: '#10B981' },
-  correspondence: { title: 'Correspondência', emoji: '✉️', color: '#64748B' },
-  shopping: { title: 'Compras', emoji: '🛍️', color: '#EC4899' },
-  health: { title: 'Saúde', emoji: '🏥', color: '#F87171' },
-  technology: { title: 'Tecnologia', emoji: '💻', color: '#38BDF8' },
+export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: string; color: string; level: CEFRLevel }> = {
+  greetings: { title: 'Saudações', emoji: '👋', color: '#4F9CF9', level: 'A1' },
+  compliments: { title: 'Elogios', emoji: '✨', color: '#A78BFA', level: 'A2' },
+  family: { title: 'Família', emoji: '👨‍👩‍👧‍👦', color: '#F59E0B', level: 'A1' },
+  relationships: { title: 'Relacionamentos', emoji: '❤️', color: '#EF4444', level: 'B1' },
+  business: { title: 'Negócios', emoji: '💼', color: '#22C55E', level: 'B1' },
+  travel: { title: 'Viagens', emoji: '✈️', color: '#06B6D4', level: 'A2' },
+  emotions: { title: 'Emoções', emoji: '😊', color: '#F472B6', level: 'A2' },
+  common: { title: 'Cotidiano', emoji: '💬', color: '#94A3B8', level: 'B1' },
+  food: { title: 'Comida', emoji: '🍽️', color: '#FB923C', level: 'A1' },
+  nightlife: { title: 'Vida Noturna', emoji: '🌙', color: '#8B5CF6', level: 'A2' },
+  professional: { title: 'Profissional', emoji: '🎯', color: '#10B981', level: 'B2' },
+  correspondence: { title: 'Correspondência', emoji: '✉️', color: '#64748B', level: 'B2' },
+  shopping: { title: 'Compras', emoji: '🛍️', color: '#EC4899', level: 'A1' },
+  health: { title: 'Saúde', emoji: '🏥', color: '#F87171', level: 'A2' },
+  technology: { title: 'Tecnologia', emoji: '💻', color: '#38BDF8', level: 'B1' },
 };
 
 export const QUICK_REPLIES = [

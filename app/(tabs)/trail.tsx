@@ -14,7 +14,15 @@ import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../..
 import { getCompletedNodes } from '../../services/pathProgress';
 import { getProgress } from '../../services/storage';
 import { getProfile, UserProfile } from '../../services/profile';
+import { CULTURE_NUGGETS, CULTURE_TYPE_LABELS } from '../../constants/culture';
 import { UserProgress } from '../../types';
+
+function dayOfYear(): number {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - start.getTime();
+  return Math.floor(diff / 86400000);
+}
 
 const { width } = Dimensions.get('window');
 const DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -145,6 +153,9 @@ export default function TrailScreen() {
   const todayIdx = new Date().getDay();
   const streak = progress?.currentStreak ?? 0;
 
+  const dailyNugget = CULTURE_NUGGETS[dayOfYear() % CULTURE_NUGGETS.length];
+  const dailyMeta = CULTURE_TYPE_LABELS[dailyNugget.type];
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
@@ -209,6 +220,22 @@ export default function TrailScreen() {
           <ModuleCard key={mod.id} mod={mod} color={moduleColor(mod)} onPress={() => openModule(mod)} />
         ))}
       </ScrollView>
+
+      <Pressable
+        style={({ pressed }) => [styles.dailyCard, pressed && { opacity: 0.9 }]}
+        onPress={() => router.push('/culture')}
+      >
+        <View style={styles.dailyTopRow}>
+          <View style={[styles.dailyChip, { backgroundColor: dailyMeta.color + '22' }]}>
+            <Text style={[styles.dailyChipText, { color: dailyMeta.color }]}>
+              {dailyMeta.emoji} Frase do dia · {dailyNugget.level}
+            </Text>
+          </View>
+          <Ionicons name="arrow-forward-circle-outline" size={20} color={Colors.textMuted} />
+        </View>
+        <Text style={styles.dailyPhrase}>{dailyNugget.phrase}</Text>
+        <Text style={styles.dailyTranslation}>{dailyNugget.translation}</Text>
+      </Pressable>
 
       <View style={styles.weekCard}>
         <View style={styles.sectionHeaderRow}>
@@ -329,6 +356,23 @@ const styles = StyleSheet.create({
 
   track: { height: 5, borderRadius: 3, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 3 },
+
+  dailyCard: {
+    marginTop: 24,
+    backgroundColor: Colors.surface,
+    borderRadius: 18,
+    padding: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  dailyTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  dailyChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  dailyChipText: { fontSize: 11, fontWeight: '700' },
+  dailyPhrase: { color: Colors.text, fontSize: 18, fontWeight: '700', lineHeight: 24 },
+  dailyTranslation: { color: Colors.textMuted, fontSize: 13, marginTop: 4 },
 
   weekCard: {
     marginTop: 28,
