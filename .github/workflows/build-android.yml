@@ -29,9 +29,14 @@ jobs:
       - name: Expo prebuild (android)
         run: npx expo prebuild --platform android --clean
 
+      - name: Increase Gradle JVM heap
+        run: |
+          echo "org.gradle.jvmargs=-Xmx5120m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> android/gradle.properties
+          echo "org.gradle.parallel=false" >> android/gradle.properties
+
       - name: Build debug APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --max-workers=2
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
