@@ -13,6 +13,7 @@ import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
 import { getCompletedNodes } from '../../services/pathProgress';
 import { getProgress } from '../../services/storage';
+import { getProfile, UserProfile } from '../../services/profile';
 import { UserProgress } from '../../types';
 
 const { width } = Dimensions.get('window');
@@ -87,11 +88,13 @@ export default function TrailScreen() {
   const router = useRouter();
   const [completed, setCompleted] = useState<string[]>([]);
   const [progress, setProgress] = useState<UserProgress | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       getCompletedNodes().then(setCompleted);
       getProgress().then(setProgress);
+      getProfile().then(setProfile);
     }, []),
   );
 
@@ -145,13 +148,28 @@ export default function TrailScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>{greeting()}</Text>
-          <Text style={styles.greetingSub}>Pronto para praticar hoje?</Text>
+        <View style={styles.headerLeft}>
+          {profile?.avatarEmoji && (
+            <View style={[styles.headerAvatar, { backgroundColor: (profile.avatarColor ?? Colors.primary) + '33', borderColor: profile.avatarColor ?? Colors.primary }]}>
+              <Text style={styles.headerAvatarEmoji}>{profile.avatarEmoji}</Text>
+            </View>
+          )}
+          <View>
+            <Text style={styles.greeting}>
+              {greeting()}{profile?.displayName ? `, ${profile.displayName}` : ''}
+            </Text>
+            <Text style={styles.greetingSub}>Pronto para praticar hoje?</Text>
+          </View>
         </View>
-        <View style={styles.streakBadge}>
-          <Ionicons name="flame" size={16} color={Colors.primary} />
-          <Text style={styles.streakNumber}>{streak}</Text>
+        <View style={styles.headerBadges}>
+          <View style={styles.xpBadge}>
+            <Ionicons name="star" size={14} color={Colors.gold} />
+            <Text style={styles.xpNumber}>{progress?.xp ?? 0}</Text>
+          </View>
+          <View style={styles.streakBadge}>
+            <Ionicons name="flame" size={16} color={Colors.primary} />
+            <Text style={styles.streakNumber}>{streak}</Text>
+          </View>
         </View>
       </View>
 
@@ -211,9 +229,30 @@ const styles = StyleSheet.create({
   content: { padding: 20, paddingTop: 60, paddingBottom: 40 },
 
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 1 },
+  headerAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerAvatarEmoji: { fontSize: 19 },
   greeting: { color: Colors.text, fontSize: 22, fontWeight: '700' },
   greetingSub: { color: Colors.textMuted, fontSize: 14, marginTop: 2 },
 
+  headerBadges: { flexDirection: 'row', gap: 8 },
+  xpBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.primaryDeep,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 4,
+  },
+  xpNumber: { color: Colors.gold, fontWeight: '700', fontSize: 14 },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',

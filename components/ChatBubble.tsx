@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Message } from '../types';
@@ -133,7 +133,9 @@ export default function ChatBubble({ message }: Props) {
           {!isUser && message.id !== 'streaming' && (
             <TouchableOpacity
               style={styles.listenBtn}
-              onPress={() => speakTutor(message.content)}
+              onPress={() => speakTutor(message.content, {
+                onError: (msg) => Alert.alert('Não consegui falar', msg),
+              })}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Ionicons name="volume-high" size={14} color={Colors.primaryLight} />

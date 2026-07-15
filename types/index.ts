@@ -41,7 +41,10 @@ export type FlashCardCategory =
   | 'food'
   | 'nightlife'
   | 'professional'
-  | 'correspondence';
+  | 'correspondence'
+  | 'shopping'
+  | 'health'
+  | 'technology';
 
 export interface GrammarExercise {
   id: string;

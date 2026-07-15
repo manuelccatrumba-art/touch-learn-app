@@ -2,10 +2,12 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 
 const TTS_API_URL = process.env.EXPO_PUBLIC_TTS_API_URL ?? '';
+const FETCH_TIMEOUT_MS = 15000;
 
 interface SpeakCallbacks {
   onDone?: () => void;
   onStopped?: () => void;
+  onError?: (message: string) => void;
 }
 
 let currentSound: Audio.Sound | null = null;
@@ -15,11 +17,16 @@ let audioModeReady = false;
 
 async function ensureAudioMode() {
   if (audioModeReady) return;
-  audioModeReady = true;
   try {
-    await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: false,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+    audioModeReady = true;
   } catch {
-    // non-fatal
+    // will retry on next call
   }
 }
 
@@ -60,6 +67,16 @@ export function stripMarkdownForSpeech(content: string) {
     .trim();
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallbacks) {
   if (!TTS_API_URL || !text.trim()) {
     if (myToken === speechToken) callbacks.onDone?.();
@@ -67,14 +84,26 @@ async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallb
   }
 
   try {
-    const res = await fetch(TTS_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
+    const res = await fetchWithTimeout(
+      TTS_API_URL,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      },
+      FETCH_TIMEOUT_MS,
+    );
     if (myToken !== speechToken) return;
 
     if (!res.ok) {
+      let detail = `Servidor de voz devolveu erro ${res.status}`;
+      try {
+        const errBody = await res.json();
+        if (errBody?.error) detail = errBody.error;
+      } catch {
+        // keep default detail
+      }
+      callbacks.onError?.(detail);
       callbacks.onDone?.();
       return;
     }
@@ -82,6 +111,7 @@ async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallb
     const data = await res.json();
     if (myToken !== speechToken) return;
     if (!data?.audio) {
+      callbacks.onError?.('Resposta de voz sem áudio.');
       callbacks.onDone?.();
       return;
     }
@@ -98,7 +128,10 @@ async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallb
       return;
     }
 
-    const { sound } = await Audio.Sound.createAsync({ uri: fileUri }, { shouldPlay: true });
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: fileUri },
+      { shouldPlay: false, volume: 1.0 },
+    );
     if (myToken !== speechToken) {
       await sound.unloadAsync();
       FileSystem.deleteAsync(fileUri, { idempotent: true });
@@ -107,7 +140,14 @@ async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallb
     currentSound = sound;
 
     sound.setOnPlaybackStatusUpdate((status) => {
-      if (!status.isLoaded || !status.didJustFinish) return;
+      if (!status.isLoaded) {
+        if ((status as any).error) {
+          callbacks.onError?.(`Falha ao tocar áudio: ${(status as any).error}`);
+          if (myToken === speechToken) callbacks.onDone?.();
+        }
+        return;
+      }
+      if (!status.didJustFinish) return;
       sound.unloadAsync();
       FileSystem.deleteAsync(fileUri, { idempotent: true });
       if (myToken === speechToken) {
@@ -116,8 +156,17 @@ async function fetchAndPlay(text: string, myToken: number, callbacks: SpeakCallb
         callbacks.onDone?.();
       }
     });
-  } catch {
-    if (myToken === speechToken) callbacks.onDone?.();
+
+    // Explicit play call — more reliable across devices than relying solely
+    // on shouldPlay at creation time.
+    await sound.playAsync();
+  } catch (err: any) {
+    if (myToken !== speechToken) return;
+    const message = err?.name === 'AbortError'
+      ? 'A voz demorou demasiado tempo a responder (sem internet ou servidor lento).'
+      : `Erro de voz: ${err?.message ?? 'desconhecido'}`;
+    callbacks.onError?.(message);
+    callbacks.onDone?.();
   }
 }
 

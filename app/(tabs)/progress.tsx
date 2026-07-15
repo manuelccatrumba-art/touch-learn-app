@@ -4,14 +4,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import * as Application from 'expo-application';
 import { Colors } from '../../constants/Colors';
-import { getProgress, resetAllData } from '../../services/storage';
+import { getProgress } from '../../services/storage';
 import { UserProgress } from '../../types';
 import CircularProgress from '../../components/CircularProgress';
 
@@ -198,22 +196,6 @@ export default function ProgressScreen() {
           })}
         </View>
 
-        {/* Reset */}
-        <TouchableOpacity
-          style={styles.resetBtn}
-          onPress={async () => {
-            await resetAllData();
-            const fresh = await getProgress();
-            setProgress(fresh);
-          }}
-        >
-          <Text style={styles.resetText}>Redefinir progresso</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.versionText}>
-          Touch Learn v{Application.nativeApplicationVersion} (build {Application.nativeBuildVersion})
-        </Text>
-
         <View style={styles.bottomPad} />
       </ScrollView>
     </SafeAreaView>
@@ -370,15 +352,5 @@ const styles = StyleSheet.create({
   lockedText: { color: Colors.textMuted },
   achievementDesc: { color: Colors.textSecondary, fontSize: 10, textAlign: 'center', marginTop: 3, lineHeight: 14 },
 
-  resetBtn: {
-    paddingVertical: 14,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.error + '55',
-    borderRadius: 14,
-    marginTop: 4,
-  },
-  resetText: { color: Colors.error, fontSize: 14 },
-  versionText: { color: Colors.textMuted, fontSize: 11, textAlign: 'center', marginTop: 4 },
   bottomPad: { height: 20 },
 });

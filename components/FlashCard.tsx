@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   StyleSheet,
   Text,
@@ -72,7 +73,9 @@ export default function FlashCard({ card, onGrade }: Props) {
             <Text style={styles.english}>{card.english}</Text>
             <TouchableOpacity
               style={styles.listenBtn}
-              onPress={() => speakEnglish(card.english)}
+              onPress={() => speakEnglish(card.english, {
+                onError: (msg) => Alert.alert('Não consegui falar', msg),
+              })}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Ionicons name="volume-high" size={20} color={Colors.white} />

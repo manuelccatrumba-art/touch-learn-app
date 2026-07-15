@@ -60,6 +60,19 @@ export const LEARNING_PATH: PathNode[] = [
   grammarNode('NL19'),
   grammarNode('NL20'),
   vocabNode('correspondence'),
+  vocabNode('shopping'),
+  grammarNode('NL21'),
+  vocabNode('health'),
+  grammarNode('NL22'),
+  grammarNode('NL23'),
+  vocabNode('technology'),
+  grammarNode('NL24'),
+  grammarNode('NL25'),
+  grammarNode('NL26'),
+  grammarNode('NL27'),
+  grammarNode('NL28'),
+  grammarNode('NL29'),
+  grammarNode('NL30'),
 ];
 
 export interface LearningModule {
@@ -75,4 +88,6 @@ export const LEARNING_MODULES: LearningModule[] = [
   { id: 'grammar-core', title: 'Gramática Intermédia', icon: '📘', nodes: LEARNING_PATH.slice(8, 16) },
   { id: 'practical', title: 'Comunicação Prática', icon: '💬', nodes: LEARNING_PATH.slice(16, 22) },
   { id: 'advanced', title: 'Inglês Avançado', icon: '🚀', nodes: LEARNING_PATH.slice(22, 26) },
+  { id: 'real-life', title: 'Vida Real', icon: '🌍', nodes: LEARNING_PATH.slice(26, 32) },
+  { id: 'mastery', title: 'Domínio Avançado', icon: '🏆', nodes: LEARNING_PATH.slice(32, 39) },
 ];

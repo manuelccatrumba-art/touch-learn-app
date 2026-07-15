@@ -160,6 +160,36 @@ export const FLASHCARD_DATA: FlashCardData[] = [
   { id: 'p6', category: 'professional', portuguese: 'Qual é a faixa salarial para esta vaga?', english: "What's the salary range for this position?", usage: 'Perguntar sobre remuneração' },
   { id: 'p7', category: 'professional', portuguese: 'Fui promovido(a) recentemente.', english: 'I was recently promoted.', usage: 'Anunciar uma promoção' },
   { id: 'p8', category: 'professional', portuguese: 'Trabalho bem sob pressão.', english: 'I work well under pressure.', usage: 'Descrever uma qualidade profissional' },
+
+  // === COMPRAS ===
+  { id: 'sh1', category: 'shopping', portuguese: 'Só estou olhando, obrigado(a).', english: "I'm just browsing/looking, thanks.", usage: 'Quando um vendedor pergunta se precisa de ajuda' },
+  { id: 'sh2', category: 'shopping', portuguese: 'Quanto custa isso?', english: 'How much does this cost? / How much is this?', usage: 'Perguntando o preço' },
+  { id: 'sh3', category: 'shopping', portuguese: 'Tem em outro tamanho?', english: 'Do you have this in a different size?', usage: 'Pedindo outro tamanho' },
+  { id: 'sh4', category: 'shopping', portuguese: 'Posso experimentar?', english: 'Can I try this on?', usage: 'Pedindo para provar roupa' },
+  { id: 'sh5', category: 'shopping', portuguese: 'Está com desconto?', english: 'Is this on sale?', usage: 'Perguntando sobre promoção' },
+  { id: 'sh6', category: 'shopping', portuguese: 'Aceita cartão?', english: 'Do you take cards? / Do you accept card payments?', usage: 'Perguntando forma de pagamento' },
+  { id: 'sh7', category: 'shopping', portuguese: 'Gostaria de devolver isto.', english: "I'd like to return this.", usage: 'Devolvendo um produto' },
+  { id: 'sh8', category: 'shopping', portuguese: 'Não é bem o que eu procurava.', english: "It's not quite what I was looking for.", usage: 'Recusar educadamente um produto' },
+
+  // === SAÚDE ===
+  { id: 'h1', category: 'health', portuguese: 'Não estou me sentindo bem.', english: "I'm not feeling well.", usage: 'Informar que está doente' },
+  { id: 'h2', category: 'health', portuguese: 'Estou com dor de cabeça.', english: 'I have a headache.', usage: 'Descrever um sintoma' },
+  { id: 'h3', category: 'health', portuguese: 'Preciso marcar uma consulta.', english: 'I need to make an appointment.', usage: 'Marcando consulta médica' },
+  { id: 'h4', category: 'health', portuguese: 'Você toma algum medicamento?', english: 'Are you taking any medication?', usage: 'Pergunta comum do médico' },
+  { id: 'h5', category: 'health', portuguese: 'Estou com febre.', english: 'I have a fever.', usage: 'Descrever sintoma' },
+  { id: 'h6', category: 'health', portuguese: 'Ele torceu o tornozelo.', english: 'He twisted his ankle. / He sprained his ankle.', usage: 'Descrever lesão' },
+  { id: 'h7', category: 'health', portuguese: 'Estou tomando o remédio certinho.', english: "I'm taking the medicine as prescribed.", usage: 'Confirmar adesão ao tratamento' },
+  { id: 'h8', category: 'health', portuguese: 'Isso é urgente, preciso ir ao pronto-socorro.', english: 'This is urgent, I need to go to the ER.', usage: 'Situação de emergência médica' },
+
+  // === TECNOLOGIA ===
+  { id: 'tec1', category: 'technology', portuguese: 'Meu telemóvel/celular ficou sem bateria.', english: 'My phone died. / My phone is out of battery.', usage: 'Informar que o telefone desligou' },
+  { id: 'tec2', category: 'technology', portuguese: 'Você pode me enviar por WhatsApp?', english: 'Can you send it to me on WhatsApp?', usage: 'Pedindo para enviar algo digitalmente' },
+  { id: 'tec3', category: 'technology', portuguese: 'A internet está lenta.', english: 'The internet is slow / down.', usage: 'Reclamar da conexão' },
+  { id: 'tec4', category: 'technology', portuguese: 'Esqueci minha senha.', english: 'I forgot my password.', usage: 'Ao tentar acessar uma conta' },
+  { id: 'tec5', category: 'technology', portuguese: 'Pode partilhar o ecrã?', english: 'Can you share your screen?', usage: 'Em reuniões online' },
+  { id: 'tec6', category: 'technology', portuguese: 'O sistema travou.', english: 'The system crashed. / It froze.', usage: 'Descrever falha técnica' },
+  { id: 'tec7', category: 'technology', portuguese: 'Você está a ver-me bem? Estou sem áudio.', english: "Can you see me okay? I don't have audio.", usage: 'Chamada de vídeo com problemas técnicos' },
+  { id: 'tec8', category: 'technology', portuguese: 'Já atualizei o aplicativo.', english: "I've already updated the app.", usage: 'Informar que atualizou o software' },
 ];
 
 export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: string; color: string }> = {
@@ -175,6 +205,9 @@ export const CATEGORY_LABELS: Record<FlashCardCategory, { title: string; emoji: 
   nightlife: { title: 'Vida Noturna', emoji: '🌙', color: '#8B5CF6' },
   professional: { title: 'Profissional', emoji: '🎯', color: '#10B981' },
   correspondence: { title: 'Correspondência', emoji: '✉️', color: '#64748B' },
+  shopping: { title: 'Compras', emoji: '🛍️', color: '#EC4899' },
+  health: { title: 'Saúde', emoji: '🏥', color: '#F87171' },
+  technology: { title: 'Tecnologia', emoji: '💻', color: '#38BDF8' },
 };
 
 export const QUICK_REPLIES = [

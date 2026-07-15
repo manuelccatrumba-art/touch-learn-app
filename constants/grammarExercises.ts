@@ -585,6 +585,287 @@ export const GRAMMAR_EXERCISES: GrammarExercise[] = [
     correctAnswer: 'many',
     explanation: '"Apples" é contável e está no plural — em negativas, usa-se "many".',
   },
+  // NL21 — Present Continuous vs Simple Present
+  {
+    id: 'nl21_1', noteId: 'NL21', noteTitle: 'Present Continuous vs Simple Present',
+    type: 'multiple_choice',
+    question: 'Qual é correto? (Está a acontecer agora)',
+    options: [
+      'I work on a report right now.',
+      "I'm working on a report right now.",
+      'I working on a report right now.',
+    ],
+    correctAnswer: "I'm working on a report right now.",
+    explanation: 'Ações acontecendo neste momento usam Present Continuous (to be + -ing), não Simple Present.',
+    tip: 'Simple Present = hábitos/rotinas/factos. Present Continuous = agora, neste momento, algo temporário.',
+  },
+  {
+    id: 'nl21_2', noteId: 'NL21', noteTitle: 'Present Continuous vs Simple Present',
+    type: 'correction',
+    question: 'Corrija: "I am knowing the answer."',
+    correctAnswer: 'I know the answer.',
+    explanation: 'Verbos de estado (know, like, want, believe, need, love) normalmente NÃO usam -ing, mesmo falando do presente.',
+  },
+  {
+    id: 'nl21_3', noteId: 'NL21', noteTitle: 'Present Continuous vs Simple Present',
+    type: 'fill_blank',
+    question: 'Complete: "She usually ___ (drive) to work, but today she ___ (walk)."',
+    correctAnswer: 'drives / is walking',
+    explanation: '"Usually" pede rotina (Simple Present: drives). "Today" pede algo pontual/atual (Present Continuous: is walking).',
+  },
+
+  // NL22 — Artigos (a / an / the / sem artigo)
+  {
+    id: 'nl22_1', noteId: 'NL22', noteTitle: 'Artigos: A, AN, THE ou nenhum',
+    type: 'multiple_choice',
+    question: 'Qual é correto?',
+    options: [
+      'I love the music.',
+      'I love music.',
+      'I love a music.',
+    ],
+    correctAnswer: 'I love music.',
+    explanation: 'Falando de algo em geral (música em geral, não uma música específica), não se usa artigo nenhum.',
+    tip: 'THE = algo específico/já mencionado. A/AN = um exemplo qualquer (contável singular). Sem artigo = generalizações e incontáveis.',
+  },
+  {
+    id: 'nl22_2', noteId: 'NL22', noteTitle: 'Artigos: A, AN, THE ou nenhum',
+    type: 'correction',
+    question: 'Corrija: "I saw a movie last night. A movie was amazing."',
+    correctAnswer: 'I saw a movie last night. The movie was amazing.',
+    explanation: 'Na segunda menção, já sabemos qual filme é (específico) — usa-se THE, não A.',
+  },
+  {
+    id: 'nl22_3', noteId: 'NL22', noteTitle: 'Artigos: A, AN, THE ou nenhum',
+    type: 'fill_blank',
+    question: 'Complete: "___ Amazon river is in Brazil." (nome de rio)',
+    correctAnswer: 'The',
+    explanation: 'Rios, oceanos, cordilheiras e países no plural usam THE: the Amazon, the Pacific, the Andes, the Netherlands.',
+  },
+
+  // NL23 — Question Tags
+  {
+    id: 'nl23_1', noteId: 'NL23', noteTitle: 'Question Tags',
+    type: 'multiple_choice',
+    question: 'Complete: "You speak English, ___?"',
+    options: ["don't you", "isn't it", "aren't you"],
+    correctAnswer: "don't you",
+    explanation: 'Frase afirmativa com verbo comum (speak) → question tag negativa com o auxiliar correspondente (do → don\'t).',
+    tip: 'Afirmativa → tag negativa. Negativa → tag afirmativa. O auxiliar da tag "copia" o tempo verbal da frase.',
+  },
+  {
+    id: 'nl23_2', noteId: 'NL23', noteTitle: 'Question Tags',
+    type: 'correction',
+    question: 'Corrija: "She isn\'t coming, is it?"',
+    correctAnswer: "She isn't coming, is she?",
+    explanation: 'A tag deve concordar com o sujeito da frase (she), não usar "it" genérico.',
+  },
+  {
+    id: 'nl23_3', noteId: 'NL23', noteTitle: 'Question Tags',
+    type: 'fill_blank',
+    question: 'Complete: "They have finished the project, ___ they?"',
+    correctAnswer: "haven't",
+    explanation: 'Frase afirmativa no Present Perfect (have finished) → tag negativa com "haven\'t".',
+  },
+
+  // NL24 — Discurso Indireto (Reported Speech)
+  {
+    id: 'nl24_1', noteId: 'NL24', noteTitle: 'Discurso Indireto',
+    type: 'multiple_choice',
+    question: 'Ele disse: "I am tired." Como relatar isso?',
+    options: [
+      'He said that I am tired.',
+      'He said that he was tired.',
+      'He said that he is tired.',
+    ],
+    correctAnswer: 'He said that he was tired.',
+    explanation: 'No discurso indireto, o tempo verbal geralmente "recua" um passo: presente (am) → passado (was). O pronome também muda (I → he).',
+    tip: 'Recuo verbal: present → past, past → past perfect, will → would, can → could.',
+  },
+  {
+    id: 'nl24_2', noteId: 'NL24', noteTitle: 'Discurso Indireto',
+    type: 'correction',
+    question: 'Corrija: "She told me that she will call me later." (relatado bem depois)',
+    correctAnswer: 'She told me that she would call me later.',
+    explanation: 'No discurso indireto, "will" recua para "would".',
+  },
+  {
+    id: 'nl24_3', noteId: 'NL24', noteTitle: 'Discurso Indireto',
+    type: 'fill_blank',
+    question: 'Ele perguntou: "Where do you live?" → He asked me where ___.',
+    correctAnswer: 'I lived',
+    explanation: 'Em pergunta indireta relatada: ordem normal (sujeito + verbo) e o verbo recua (do live → lived).',
+  },
+
+  // NL25 — Modais de Probabilidade
+  {
+    id: 'nl25_1', noteId: 'NL25', noteTitle: 'Modais de Probabilidade',
+    type: 'multiple_choice',
+    question: 'A luz está acesa. Ele provavelmente está em casa. Qual frase expressa isso melhor?',
+    options: [
+      'He can be at home.',
+      'He must be at home.',
+      'He must to be at home.',
+    ],
+    correctAnswer: 'He must be at home.',
+    explanation: '"Must" expressa uma conclusão lógica quase certa a partir de evidências. "Must + forma base", sem "to".',
+    tip: 'must (quase certeza) > might/could (possibilidade) > can\'t (quase certeza de que não).',
+  },
+  {
+    id: 'nl25_2', noteId: 'NL25', noteTitle: 'Modais de Probabilidade',
+    type: 'correction',
+    question: 'Corrija: "She might comes to the party."',
+    correctAnswer: 'She might come to the party.',
+    explanation: 'Depois de modais (might, could, must, can), o verbo fica na forma base, sem -s.',
+  },
+  {
+    id: 'nl25_3', noteId: 'NL25', noteTitle: 'Modais de Probabilidade',
+    type: 'fill_blank',
+    question: 'Ele mora num apartamento pequeno. Não é possível que seja rico. "He ___ be rich."',
+    correctAnswer: "can't",
+    explanation: '"Can\'t" expressa quase certeza NEGATIVA — que algo é impossível dado o contexto.',
+  },
+
+  // NL26 — Used To / Would (hábitos passados)
+  {
+    id: 'nl26_1', noteId: 'NL26', noteTitle: 'Used To / Would',
+    type: 'multiple_choice',
+    question: 'Qual é correto para descrever um hábito antigo que não existe mais?',
+    options: [
+      'I used to play soccer every weekend.',
+      'I use to play soccer every weekend.',
+      'I am used to play soccer every weekend.',
+    ],
+    correctAnswer: 'I used to play soccer every weekend.',
+    explanation: '"Used to + forma base" descreve hábitos ou estados do passado que já terminaram.',
+    tip: 'Não confunda "used to" (hábito passado) com "be used to" (estar acostumado a algo).',
+  },
+  {
+    id: 'nl26_2', noteId: 'NL26', noteTitle: 'Used To / Would',
+    type: 'correction',
+    question: 'Corrija: "When I was a kid, I would have a bicycle."',
+    correctAnswer: 'When I was a kid, I used to have a bicycle.',
+    explanation: '"Would" só funciona para AÇÕES repetidas no passado, não para ESTADOS (have, be, like). Para estados, use "used to".',
+  },
+  {
+    id: 'nl26_3', noteId: 'NL26', noteTitle: 'Used To / Would',
+    type: 'fill_blank',
+    question: 'Complete: "Every summer, we ___ (go) to my grandparents\' house." (ação repetida no passado)',
+    correctAnswer: 'would go / used to go',
+    explanation: 'Para ações repetidas no passado, "would" e "used to" são intercambiáveis.',
+  },
+
+  // NL27 — Ordem dos Adjetivos
+  {
+    id: 'nl27_1', noteId: 'NL27', noteTitle: 'Ordem dos Adjetivos',
+    type: 'multiple_choice',
+    question: 'Qual é a ordem correta?',
+    options: [
+      'a red big house',
+      'a big red house',
+      'a house big red',
+    ],
+    correctAnswer: 'a big red house',
+    explanation: 'Ordem dos adjetivos em inglês: opinião, tamanho, idade, forma, cor, origem, material + substantivo. Tamanho (big) vem antes de cor (red).',
+    tip: 'Regra prática: Opinion-Size-Age-Shape-Color-Origin-Material (OSASCOM).',
+  },
+  {
+    id: 'nl27_2', noteId: 'NL27', noteTitle: 'Ordem dos Adjetivos',
+    type: 'correction',
+    question: 'Corrija: "She bought a wooden beautiful old table."',
+    correctAnswer: 'She bought a beautiful old wooden table.',
+    explanation: 'Ordem correta: opinião (beautiful) → idade (old) → material (wooden) + substantivo.',
+  },
+  {
+    id: 'nl27_3', noteId: 'NL27', noteTitle: 'Ordem dos Adjetivos',
+    type: 'fill_blank',
+    question: 'Complete na ordem certa: "I bought ___ ___ ___ car." (small / new / red)',
+    correctAnswer: 'a nice small new red car / a small new red car',
+    explanation: 'Tamanho antes de cor: "a small new red car" segue a ordem tamanho → idade → cor.',
+  },
+
+  // NL28 — Orações Relativas (who / which / that / whose)
+  {
+    id: 'nl28_1', noteId: 'NL28', noteTitle: 'Orações Relativas',
+    type: 'multiple_choice',
+    question: 'Qual pronome relativo é correto? "The man ___ called you is my brother."',
+    options: ['which', 'who', 'whose'],
+    correctAnswer: 'who',
+    explanation: '"Who" refere-se a pessoas. "Which" refere-se a coisas/animais. "Whose" indica posse.',
+    tip: 'WHO (pessoas) | WHICH (coisas) | THAT (pessoas ou coisas, informal) | WHOSE (posse)',
+  },
+  {
+    id: 'nl28_2', noteId: 'NL28', noteTitle: 'Orações Relativas',
+    type: 'correction',
+    question: 'Corrija: "This is the book who changed my life."',
+    correctAnswer: 'This is the book that/which changed my life.',
+    explanation: '"Book" é uma coisa, não uma pessoa — use "that" ou "which", nunca "who".',
+  },
+  {
+    id: 'nl28_3', noteId: 'NL28', noteTitle: 'Orações Relativas',
+    type: 'fill_blank',
+    question: 'Complete: "That\'s the woman ___ car was stolen." (indicando posse)',
+    correctAnswer: 'whose',
+    explanation: '"Whose" indica posse: "a mulher CUJO carro foi roubado".',
+  },
+
+  // NL29 — Falsos Cognatos (False Friends)
+  {
+    id: 'nl29_1', noteId: 'NL29', noteTitle: 'Falsos Cognatos',
+    type: 'multiple_choice',
+    question: 'Como se diz "Eu pretendo viajar ano que vem" (no sentido de "planejo")?',
+    options: [
+      'I pretend to travel next year.',
+      'I intend to travel next year.',
+      'I pretender to travel next year.',
+    ],
+    correctAnswer: 'I intend to travel next year.',
+    explanation: '"Pretend" significa FINGIR, não "pretender/planejar". Para planos, use "intend" ou "plan to".',
+    tip: 'Falsos amigos comuns: pretend≠pretender(fingir), actually≠atualmente(na verdade), parents≠parentes(pais), college≠colégio(faculdade), pull≠pular(puxar).',
+  },
+  {
+    id: 'nl29_2', noteId: 'NL29', noteTitle: 'Falsos Cognatos',
+    type: 'correction',
+    question: 'Corrija: "Actually, I live in São Paulo." (querendo dizer "Atualmente")',
+    correctAnswer: 'Currently, I live in São Paulo.',
+    explanation: '"Actually" significa "na verdade" (para corrigir/esclarecer algo), não "atualmente". "Atualmente" = currently / nowadays.',
+  },
+  {
+    id: 'nl29_3', noteId: 'NL29', noteTitle: 'Falsos Cognatos',
+    type: 'fill_blank',
+    question: 'Complete corretamente: "My ___ are coming to visit for the holidays." (meus PAIS)',
+    correctAnswer: 'parents',
+    explanation: '"Parents" = pais (mãe e pai). "Relatives" = parentes em geral. Não confunda!',
+  },
+
+  // NL30 — Terceiro Condicional
+  {
+    id: 'nl30_1', noteId: 'NL30', noteTitle: 'Terceiro Condicional',
+    type: 'multiple_choice',
+    question: 'Qual é correto para falar de uma situação hipotética no PASSADO que não aconteceu?',
+    options: [
+      'If I studied harder, I would pass the exam.',
+      'If I had studied harder, I would have passed the exam.',
+      'If I would study harder, I would pass the exam.',
+    ],
+    correctAnswer: 'If I had studied harder, I would have passed the exam.',
+    explanation: 'Terceiro condicional (arrependimento/situação impossível no passado): if + had + particípio, would have + particípio.',
+    tip: 'Type 3 = passado que não pode mudar. "If I had known, I would have called you" (mas eu não sabia, então não liguei).',
+  },
+  {
+    id: 'nl30_2', noteId: 'NL30', noteTitle: 'Terceiro Condicional',
+    type: 'correction',
+    question: 'Corrija: "If she would have known, she would have come."',
+    correctAnswer: 'If she had known, she would have come.',
+    explanation: 'A parte do "if" no terceiro condicional nunca usa "would have" — usa "had + particípio".',
+  },
+  {
+    id: 'nl30_3', noteId: 'NL30', noteTitle: 'Terceiro Condicional',
+    type: 'fill_blank',
+    question: 'Complete: "If I ___ (know) about the traffic, I would have left earlier."',
+    correctAnswer: 'had known',
+    explanation: 'Terceiro condicional: if + had + particípio (had known), resultado com would have + particípio.',
+  },
 ];
 
 export const GRAMMAR_NOTES = [
@@ -608,4 +889,14 @@ export const GRAMMAR_NOTES = [
   { id: 'NL18', title: 'Phrasal Verbs Essenciais', icon: '🧩', description: 'Verbo + preposição que muda completamente o significado (give up, look for...)' },
   { id: 'NL19', title: 'Condicionais (If Clauses)', icon: '🔀', description: 'Type 1 (real/futuro) vs Type 2 (hipotético) — vai além do NL9' },
   { id: 'NL20', title: 'Contáveis e Incontáveis', icon: '🔢', description: '"much/many", "a lot of", "some/any" — quando usar cada um' },
+  { id: 'NL21', title: 'Present Continuous vs Simple Present', icon: '🎬', description: 'Ação agora (-ing) vs hábito/rotina — outro grande ponto de confusão' },
+  { id: 'NL22', title: 'Artigos: A, AN, THE', icon: '🔤', description: 'Quando usar artigo indefinido, definido ou nenhum artigo' },
+  { id: 'NL23', title: 'Question Tags', icon: '❔', description: 'As perguntinhas no fim da frase: "..., isn\'t it?" "..., don\'t you?"' },
+  { id: 'NL24', title: 'Discurso Indireto', icon: '🗨️', description: 'Como relatar o que alguém disse, com o recuo dos tempos verbais' },
+  { id: 'NL25', title: 'Modais de Probabilidade', icon: '🎲', description: 'must, might, could, can\'t — expressando certeza e possibilidade' },
+  { id: 'NL26', title: 'Used To / Would', icon: '🕰️', description: 'Como falar de hábitos e estados do passado que já acabaram' },
+  { id: 'NL27', title: 'Ordem dos Adjetivos', icon: '🎨', description: 'Por que dizemos "a big red house" e não "a red big house"' },
+  { id: 'NL28', title: 'Orações Relativas', icon: '🔗', description: 'who, which, that, whose — conectando ideias sobre pessoas e coisas' },
+  { id: 'NL29', title: 'Falsos Cognatos', icon: '⚠️', description: 'Palavras traiçoeiras: pretend, actually, parents, college...' },
+  { id: 'NL30', title: 'Terceiro Condicional', icon: '⏮️', description: 'Falando de arrependimentos: "If I had known, I would have..."' },
 ];

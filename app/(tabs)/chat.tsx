@@ -182,6 +182,7 @@ export default function ChatScreen() {
           setVoiceCallState('speaking');
           setVoiceCaption(fullText);
           speakTutor(fullText, {
+            onError: (msg) => setVoiceCaption(`⚠️ ${msg}`),
             onDone: () => {
               if (voiceCallOpenRef.current) {
                 setVoiceCallState('listening');
