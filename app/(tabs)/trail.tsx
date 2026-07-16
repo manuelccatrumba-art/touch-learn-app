@@ -5,11 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
+  TouchableOpacity,
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
+import Reanimated, { useAnimatedStyle, useSharedValue, withSpring, FadeInUp } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
 import { getCompletedNodes } from '../../services/pathProgress';
@@ -17,6 +19,22 @@ import { getProgress } from '../../services/storage';
 import { getProfile, UserProfile } from '../../services/profile';
 import { CULTURE_NUGGETS, CULTURE_TYPE_LABELS } from '../../constants/culture';
 import { UserProgress } from '../../types';
+import TutorFAB from '../../components/TutorFAB';
+import CircularProgress from '../../components/CircularProgress';
+import { useAnimatedNumber } from '../../components/AnimatedNumber';
+
+const ACHIEVEMENTS: Record<string, { title: string; emoji: string; desc: string }> = {
+  first_message: { title: 'Primeira Mensagem', emoji: '💬', desc: 'Enviou a primeira mensagem para o tutor' },
+  chatterbox: { title: 'Comunicativo', emoji: '🗣️', desc: '50 mensagens enviadas' },
+  fluent_speaker: { title: 'Fluente', emoji: '🌟', desc: '200 mensagens enviadas' },
+  grammar_student: { title: 'Estudante', emoji: '📚', desc: '10 exercícios completados' },
+  grammar_master: { title: 'Mestre da Gramática', emoji: '🎓', desc: '50 exercícios completados' },
+  vocabulary_builder: { title: 'Construtor de Vocabulário', emoji: '🔤', desc: '20 flashcards revisados' },
+  word_collector: { title: 'Colecionador de Palavras', emoji: '📖', desc: '50 flashcards aprendidos' },
+  week_warrior: { title: 'Guerreiro Semanal', emoji: '🔥', desc: '7 dias seguidos de estudo' },
+  monthly_champion: { title: 'Campeão Mensal', emoji: '🏆', desc: '30 dias seguidos de estudo' },
+  dedicated_learner: { title: 'Dedicado', emoji: '⭐', desc: '500 XP acumulados' },
+};
 
 function dayOfYear(): number {
   const now = new Date();
@@ -75,6 +93,15 @@ function ModuleCard({ mod, color, onPress }: { mod: LearningModuleState; color: 
   );
 }
 
+function StatBox({ value, label, color = Colors.primary }: { value: string | number; label: string; color?: string }) {
+  return (
+    <View style={styles.statBox}>
+      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
 function WeekChart({ data, todayIdx }: { data: number[]; todayIdx: number }) {
   const max = Math.max(...data, 1);
   return (
@@ -98,6 +125,9 @@ export default function TrailScreen() {
   const [completed, setCompleted] = useState<string[]>([]);
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [statsExpanded, setStatsExpanded] = useState(false);
+  const heroScale = useSharedValue(1);
+  const heroAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: heroScale.value }] }));
 
   useFocusEffect(
     useCallback(() => {
@@ -157,7 +187,18 @@ export default function TrailScreen() {
   const dailyNugget = CULTURE_NUGGETS[dayOfYear() % CULTURE_NUGGETS.length];
   const dailyMeta = CULTURE_TYPE_LABELS[dailyNugget.type];
 
+  const animatedXP = useAnimatedNumber({ value: progress?.xp ?? 0 });
+  const level = progress?.level ?? 1;
+  const xpForLevel = 100;
+  const currentLevelXP = animatedXP % xpForLevel;
+  const levelPct = (currentLevelXP / xpForLevel) * 100;
+  const accuracy =
+    progress && progress.exercisesCompleted > 0
+      ? Math.round((progress.exercisesCorrect / progress.exercisesCompleted) * 100)
+      : 0;
+
   return (
+    <View style={styles.flex}>
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -176,7 +217,7 @@ export default function TrailScreen() {
         <View style={styles.headerBadges}>
           <View style={styles.xpBadge}>
             <Ionicons name="star" size={14} color={Colors.gold} />
-            <Text style={styles.xpNumber}>{progress?.xp ?? 0}</Text>
+            <Text style={styles.xpNumber}>{animatedXP}</Text>
           </View>
           <View style={styles.streakBadge}>
             <Ionicons name="flame" size={16} color={Colors.primary} />
@@ -188,7 +229,12 @@ export default function TrailScreen() {
       <StreakTrail days={streak} />
 
       {currentNode ? (
-        <Pressable style={({ pressed }) => [styles.hero, pressed && { opacity: 0.9 }]} onPress={() => openNode(currentNode)}>
+        <Pressable
+          onPress={() => openNode(currentNode)}
+          onPressIn={() => { heroScale.value = withSpring(0.97); }}
+          onPressOut={() => { heroScale.value = withSpring(1); }}
+        >
+          <Reanimated.View style={[styles.hero, heroAnimatedStyle]}>
           <View style={styles.heroTopRow}>
             <View style={styles.heroIconBadge}>
               <Text style={styles.heroIconText}>{currentNode.icon}</Text>
@@ -216,6 +262,7 @@ export default function TrailScreen() {
               <Ionicons name="arrow-forward" size={16} color={Colors.background} />
             </View>
           </View>
+          </Reanimated.View>
         </Pressable>
       ) : (
         <View style={styles.hero}>
@@ -271,11 +318,80 @@ export default function TrailScreen() {
         <WeekChart data={weeklyActivity} todayIdx={todayIdx} />
         <ProgressBar value={weekTotal / WEEKLY_GOAL} color={Colors.success} />
       </View>
+
+      <TouchableOpacity style={styles.expandToggle} onPress={() => setStatsExpanded((v) => !v)} activeOpacity={0.7}>
+        <Text style={styles.expandToggleText}>
+          {statsExpanded ? 'Ocultar estatísticas ▲' : 'Ver estatísticas completas ▾'}
+        </Text>
+      </TouchableOpacity>
+
+      {statsExpanded && progress && (
+        <Reanimated.View entering={FadeInUp.duration(250)}>
+          <View style={styles.levelBox}>
+            <View style={styles.levelTopRow}>
+              <CircularProgress
+                size={90}
+                strokeWidth={8}
+                progress={levelPct}
+                label={`${Math.round(levelPct)}%`}
+                sublabel="de 100 XP"
+              />
+              <View style={styles.levelInfo}>
+                <View style={styles.levelBadgeWrap}>
+                  <Text style={styles.levelBadge}>NÍVEL {level}</Text>
+                </View>
+                <Text style={styles.levelXP}>{currentLevelXP} / {xpForLevel} XP</Text>
+                <Text style={styles.levelNext}>{xpForLevel - currentLevelXP} XP para o próximo nível</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.statsGrid}>
+            <StatBox value={progress.totalMessages} label="Mensagens" />
+            <StatBox value={progress.exercisesCompleted} label="Exercícios" />
+            <StatBox value={`${accuracy}%`} label="Precisão" />
+            <StatBox value={progress.flashcardsReviewed} label="Revisados" />
+            <StatBox value={progress.flashcardsLearned} label="Aprendidos" />
+            <StatBox value={progress.longestStreak} label="Recorde streak" color={Colors.gold} />
+          </View>
+
+          <Text style={styles.sectionHeader}>
+            Conquistas ({progress.achievements.length}/{Object.keys(ACHIEVEMENTS).length})
+          </Text>
+          <View style={styles.achievementGrid}>
+            {Object.entries(ACHIEVEMENTS).map(([id, ach], idx) => {
+              const unlocked = progress.achievements.includes(id);
+              return (
+                <Reanimated.View
+                  key={id}
+                  entering={FadeInUp.delay(idx * 40).duration(300)}
+                  style={[
+                    styles.achievementCard,
+                    unlocked && styles.achievementUnlocked,
+                    !unlocked && styles.achievementLocked,
+                  ]}
+                >
+                  <Text style={[styles.achievementEmoji, !unlocked && styles.lockedEmoji]}>
+                    {unlocked ? ach.emoji : '🔒'}
+                  </Text>
+                  <Text style={[styles.achievementTitle, !unlocked && styles.lockedText]}>
+                    {ach.title}
+                  </Text>
+                  {unlocked && <Text style={styles.achievementDesc}>{ach.desc}</Text>}
+                </Reanimated.View>
+              );
+            })}
+          </View>
+        </Reanimated.View>
+      )}
     </ScrollView>
+    <TutorFAB />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   screen: { flex: 1, backgroundColor: Colors.background },
   content: { padding: 20, paddingTop: 60, paddingBottom: 40 },
 
@@ -456,4 +572,73 @@ const styles = StyleSheet.create({
   weekCol: { alignItems: 'center', flex: 1 },
   weekBar: { width: 10, borderRadius: 4 },
   weekLabel: { color: Colors.textMuted, fontSize: 11, marginTop: 6 },
+
+  expandToggle: { alignItems: 'center', marginTop: 20, paddingVertical: 8 },
+  expandToggleText: { color: Colors.primary, fontSize: 13, fontWeight: '700' },
+
+  levelBox: {
+    backgroundColor: Colors.card,
+    borderRadius: 20,
+    padding: 20,
+    marginTop: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  levelTopRow: { flexDirection: 'row', alignItems: 'center', gap: 18 },
+  levelInfo: { flex: 1, gap: 6 },
+  levelBadgeWrap: {
+    backgroundColor: Colors.primaryDeep,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  levelBadge: { color: Colors.gold, fontWeight: '800', fontSize: 13, letterSpacing: 1 },
+  levelXP: { color: Colors.textSecondary, fontSize: 14 },
+  levelNext: { color: Colors.primary, fontSize: 12, fontWeight: '600' },
+
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 14 },
+  statBox: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    flex: 1,
+    minWidth: '30%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statValue: { fontSize: 22, fontWeight: '800' },
+  statLabel: { color: Colors.textSecondary, fontSize: 11, marginTop: 3 },
+
+  achievementGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 14 },
+  achievementCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 14,
+    alignItems: 'center',
+    flex: 1,
+    minWidth: '45%',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  achievementUnlocked: {
+    borderColor: Colors.primary + '55',
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  achievementLocked: { opacity: 0.35 },
+  achievementEmoji: { fontSize: 30, marginBottom: 6 },
+  lockedEmoji: { fontSize: 22 },
+  achievementTitle: { color: Colors.text, fontWeight: '700', fontSize: 12, textAlign: 'center' },
+  lockedText: { color: Colors.textMuted },
+  achievementDesc: { color: Colors.textSecondary, fontSize: 10, textAlign: 'center', marginTop: 3, lineHeight: 14 },
 });

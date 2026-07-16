@@ -53,9 +53,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="trail"
         options={{
-          title: 'Trilha',
+          title: 'Início',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="map" color={color} focused={focused} />
+            <TabIcon name="home" color={color} focused={focused} />
           ),
         }}
       />
@@ -69,38 +69,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="grammar"
+        name="library"
         options={{
-          title: 'Gramática',
+          title: 'Biblioteca',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="book" color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="vocabulary"
-        options={{
-          title: 'Vocabulário',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="layers" color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="culture"
-        options={{
-          title: 'Cultura',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="musical-notes" color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="progress"
-        options={{
-          title: 'Progresso',
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="stats-chart" color={color} focused={focused} />
+            <TabIcon name="library" color={color} focused={focused} />
           ),
         }}
       />
@@ -113,6 +86,12 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* Ainda navegáveis (deep-links a partir da Trilha/Biblioteca), mas
+          escondidos da tab bar para reduzir a fragmentação de 7 para 4 abas. */}
+      <Tabs.Screen name="grammar" options={{ href: null }} />
+      <Tabs.Screen name="vocabulary" options={{ href: null }} />
+      <Tabs.Screen name="culture" options={{ href: null }} />
     </Tabs>
   );
 }
