@@ -248,6 +248,17 @@ export default function TrailScreen() {
         </View>
         <Text style={styles.dailyPhrase}>{dailyNugget.phrase}</Text>
         <Text style={styles.dailyTranslation}>{dailyNugget.translation}</Text>
+        <Pressable
+          style={({ pressed }) => [styles.dailyPracticeBtn, pressed && { opacity: 0.85 }]}
+          onPress={() =>
+            router.push({
+              pathname: '/chat',
+              params: { seedPhrase: dailyNugget.phrase, seedTranslation: dailyNugget.translation },
+            })
+          }
+        >
+          <Text style={styles.dailyPracticeBtnText}>Praticar com o Tutor →</Text>
+        </Pressable>
       </Pressable>
 
       <View style={styles.weekCard}>
@@ -411,6 +422,15 @@ const styles = StyleSheet.create({
   dailyChipText: { fontSize: 11, fontWeight: '700' },
   dailyPhrase: { color: Colors.text, fontSize: 18, fontWeight: '700', lineHeight: 24 },
   dailyTranslation: { color: Colors.textMuted, fontSize: 13, marginTop: 4 },
+  dailyPracticeBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 14,
+  },
+  dailyPracticeBtnText: { color: Colors.background, fontWeight: '700', fontSize: 12.5 },
 
   weekCard: {
     marginTop: 28,

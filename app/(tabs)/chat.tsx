@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Message, Conversation } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { streamChatMessage } from '../../services/claudeApi';
@@ -47,6 +47,8 @@ const WELCOME: Message = {
 };
 
 export default function ChatScreen() {
+  const params = useLocalSearchParams<{ seedPhrase?: string; seedTranslation?: string }>();
+  const router = useRouter();
   const [conversation, setConversation] = useState<Conversation>(newConversation());
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
@@ -90,9 +92,30 @@ export default function ChatScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadConversation();
-    }, []),
+      if (params.seedPhrase) {
+        startSeededConversation(params.seedPhrase, params.seedTranslation);
+      } else {
+        loadConversation();
+      }
+    }, [params.seedPhrase, params.seedTranslation]),
   );
+
+  async function startSeededConversation(phrase: string, translation?: string) {
+    const seedText =
+      `🎯 **Desafio do dia!**\n\nA frase de hoje é: **"${phrase}"**` +
+      `${translation ? ` (${translation})` : ''}.\n\n` +
+      `Tenta usá-la numa frase tua, como se estivesses numa situação real. ` +
+      `Podes escrever em português ou inglês — vou ajudar-te a melhorar! 💪`;
+    const seeded: Conversation = {
+      id: makeId(),
+      messages: [{ id: makeId(), role: 'assistant', content: seedText, timestamp: Date.now() }],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    setConversation(seeded);
+    await setActiveConversation(seeded);
+    router.setParams({ seedPhrase: undefined, seedTranslation: undefined });
+  }
 
   useEffect(() => {
     if (voiceError) {

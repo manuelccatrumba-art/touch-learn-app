@@ -78,7 +78,11 @@ export default function VocabularyScreen() {
       ? cards
       : cards.filter((c) => c.category === selectedCategory);
 
-  const dueCards = filteredCards.filter((c) => c.nextReview <= Date.now());
+  const now = Date.now();
+  const THREE_DAYS_MS = 3 * 86400000;
+  const dueCards = filteredCards.filter((c) => c.nextReview <= now);
+  const soonCards = filteredCards.filter((c) => c.nextReview > now && c.nextReview <= now + THREE_DAYS_MS);
+  const consolidatedCards = filteredCards.filter((c) => c.nextReview > now + THREE_DAYS_MS);
 
   function startSession(all = false) {
     const pool = all ? filteredCards : dueCards;
@@ -186,16 +190,31 @@ export default function VocabularyScreen() {
         </View>
       </View>
 
-      {/* Due count banner */}
+      {/* Buckets de urgência de revisão (spaced repetition) */}
+      <View style={styles.urgencyRow}>
+        <View style={[styles.urgencyBox, { borderColor: Colors.error + '55' }]}>
+          <Text style={[styles.urgencyCount, { color: Colors.error }]}>{dueCards.length}</Text>
+          <Text style={styles.urgencyLabel}>Urgentes</Text>
+        </View>
+        <View style={[styles.urgencyBox, { borderColor: Colors.primary + '55' }]}>
+          <Text style={[styles.urgencyCount, { color: Colors.primary }]}>{soonCards.length}</Text>
+          <Text style={styles.urgencyLabel}>Em breve</Text>
+        </View>
+        <View style={[styles.urgencyBox, { borderColor: Colors.success + '55' }]}>
+          <Text style={[styles.urgencyCount, { color: Colors.success }]}>{consolidatedCards.length}</Text>
+          <Text style={styles.urgencyLabel}>Consolidados</Text>
+        </View>
+      </View>
+
       {dueCards.length > 0 && (
         <TouchableOpacity style={styles.dueBanner} onPress={() => startSession(false)}>
           <View style={styles.dueBannerLeft}>
             <Text style={styles.dueBannerIcon}>🔔</Text>
             <View>
               <Text style={styles.dueBannerTitle}>
-                {dueCards.length} card{dueCards.length !== 1 ? 's' : ''} para revisar
+                Rever os {dueCards.length} urgente{dueCards.length !== 1 ? 's' : ''}
               </Text>
-              <Text style={styles.dueBannerSub}>Toque para iniciar a revisão diária</Text>
+              <Text style={styles.dueBannerSub}>Prioridade: nunca revistos ou vencidos primeiro</Text>
             </View>
           </View>
           <View style={styles.dueBannerArrow}>
@@ -328,6 +347,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerBadgeText: { color: Colors.white, fontWeight: '800', fontSize: 13, letterSpacing: 1 },
+
+  urgencyRow: { flexDirection: 'row', gap: 10, marginHorizontal: 14, marginTop: 4 },
+  urgencyBox: {
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1.5,
+  },
+  urgencyCount: { fontSize: 20, fontWeight: '800' },
+  urgencyLabel: { color: Colors.textSecondary, fontSize: 11, marginTop: 2 },
 
   dueBanner: {
     margin: 14,

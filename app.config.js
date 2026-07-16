@@ -18,7 +18,7 @@ module.exports = {
     },
     android: {
       package: 'com.touchlearn.app',
-      versionCode: 19,
+      versionCode: 20,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#070D1F',
