@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Message } from '../types';
 import { Colors } from '../constants/Colors';
@@ -115,34 +116,42 @@ export default function ChatBubble({ message }: Props) {
         </View>
       )}
 
-      <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAI]}>
-        {!isUser && (
+      {isUser ? (
+        <LinearGradient
+          colors={Colors.gradientHero}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.bubble, styles.bubbleUser]}
+        >
+          <FormattedContent content={message.content} textStyle={[styles.text, styles.textUser]} />
+          <View style={styles.bottomRow}>
+            <Text style={[styles.time, styles.timeUser]}>
+              {new Date(message.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+        </LinearGradient>
+      ) : (
+        <View style={[styles.bubble, styles.bubbleAI]}>
           <Text style={styles.senderName}>Touch Learn</Text>
-        )}
-        <FormattedContent
-          content={message.content}
-          textStyle={[styles.text, isUser ? styles.textUser : styles.textAI]}
-        />
-        <View style={styles.bottomRow}>
-          <Text style={[styles.time, isUser ? styles.timeUser : styles.timeAI]}>
-            {new Date(message.timestamp).toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </Text>
-          {!isUser && message.id !== 'streaming' && (
-            <TouchableOpacity
-              style={styles.listenBtn}
-              onPress={() => speakTutor(message.content, {
-                onError: (msg) => Alert.alert('Não consegui falar', msg),
-              })}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="volume-high" size={14} color={Colors.primaryLight} />
-            </TouchableOpacity>
-          )}
+          <FormattedContent content={message.content} textStyle={[styles.text, styles.textAI]} />
+          <View style={styles.bottomRow}>
+            <Text style={[styles.time, styles.timeAI]}>
+              {new Date(message.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+            {message.id !== 'streaming' && (
+              <TouchableOpacity
+                style={styles.listenBtn}
+                onPress={() => speakTutor(message.content, {
+                  onError: (msg) => Alert.alert('Não consegui falar', msg),
+                })}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="volume-high" size={14} color={Colors.primaryLight} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
+      )}
 
       {isUser && (
         <View style={styles.userAvatarWrapper}>
@@ -230,7 +239,7 @@ const styles = StyleSheet.create({
   },
   bubble: {
     maxWidth: '72%',
-    borderRadius: 20,
+    borderRadius: 16,
     paddingHorizontal: 15,
     paddingVertical: 10,
     shadowColor: '#000',
@@ -240,13 +249,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   bubbleUser: {
-    backgroundColor: Colors.userBubble,
-    borderBottomRightRadius: 5,
-    borderWidth: 0,
+    borderBottomRightRadius: 4,
   },
   bubbleAI: {
-    backgroundColor: Colors.card,
-    borderBottomLeftRadius: 5,
+    backgroundColor: Colors.surface,
+    borderBottomLeftRadius: 4,
   },
   senderName: {
     color: Colors.primaryLight,

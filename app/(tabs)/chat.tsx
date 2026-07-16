@@ -4,6 +4,7 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,7 +14,15 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import Reanimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { Message, Conversation } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { streamChatMessage } from '../../services/claudeApi';
@@ -33,6 +42,60 @@ import { speakTutor, stopSpeaking } from '../../services/speech';
 function makeId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
+
+function TutorOrb() {
+  const pulse = useSharedValue(1);
+
+  useEffect(() => {
+    pulse.value = withRepeat(
+      withSequence(withTiming(1.08, { duration: 900 }), withTiming(1, { duration: 900 })),
+      -1,
+      true,
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.value }] }));
+
+  return (
+    <Reanimated.View style={[orbStyles.wrapper, animatedStyle]}>
+      <LinearGradient
+        colors={['#ffc466', '#f0a83f', '#e6455a']}
+        locations={[0, 0.55, 1]}
+        start={{ x: 0.15, y: 0.1 }}
+        end={{ x: 0.9, y: 1 }}
+        style={orbStyles.orb}
+      >
+        <View style={orbStyles.highlight} />
+      </LinearGradient>
+    </Reanimated.View>
+  );
+}
+
+const orbStyles = StyleSheet.create({
+  wrapper: {
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.55,
+    shadowRadius: 18,
+    elevation: 10,
+  },
+  orb: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  highlight: {
+    position: 'absolute',
+    top: 10,
+    left: 14,
+    width: 20,
+    height: 14,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+  },
+});
 
 function newConversation(): Conversation {
   return { id: makeId(), messages: [], createdAt: Date.now(), updatedAt: Date.now() };
@@ -88,6 +151,29 @@ export default function ChatScreen() {
     setVoiceCallOpen(false);
     stopListening();
     stopSpeaking();
+  }
+
+  const micPulse = useSharedValue(0);
+  useEffect(() => {
+    if (listening) {
+      micPulse.value = withRepeat(
+        withSequence(withTiming(1, { duration: 800 }), withTiming(0, { duration: 0 })),
+        -1,
+        false,
+      );
+    } else {
+      micPulse.value = withTiming(0, { duration: 150 });
+    }
+  }, [listening]);
+  const micPulseStyle = useAnimatedStyle(() => ({
+    opacity: 0.5 * (1 - micPulse.value),
+    transform: [{ scale: 1 + micPulse.value * 0.6 }],
+  }));
+
+  function statusLabel(): string {
+    if (isStreaming) return 'a pensar...';
+    if (listening) return 'a ouvir...';
+    return 'pronto';
   }
 
   useFocusEffect(
@@ -245,34 +331,18 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerAccent} />
-        <View style={styles.headerContent}>
-          <View style={styles.headerLeft}>
-            <View style={styles.headerAvatarWrapper}>
-              <View style={styles.headerAvatar}>
-                <Text style={styles.headerAvatarText}>TL</Text>
-              </View>
-              <View style={styles.headerOnlineDot} />
-            </View>
-            <View>
-              <Text style={styles.headerBrand}>TOUCH LEARN</Text>
-              <Text style={styles.headerSubtitle}>Assistente Inteligente de Inglês</Text>
-            </View>
-          </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity onPress={openVoiceCall} style={styles.callBtn}>
-              <Ionicons name="call" size={16} color={Colors.white} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={clearChat} style={styles.newChatBtn}>
-              <View style={styles.newChatInner}>
-                <Ionicons name="add" size={16} color={Colors.primary} />
-                <Text style={styles.newChatText}>Novo</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+      {/* Header — orbe pulsante em vez do cabeçalho institucional */}
+      <View style={styles.orbHeader}>
+        <TouchableOpacity onPress={clearChat} style={styles.orbCornerBtn}>
+          <Ionicons name="add" size={18} color={Colors.textSecondary} />
+        </TouchableOpacity>
+        <View style={styles.orbCenter}>
+          <TutorOrb />
+          <Text style={styles.orbStatusLabel}>{statusLabel()}</Text>
         </View>
+        <TouchableOpacity onPress={openVoiceCall} style={styles.orbCornerBtn}>
+          <Ionicons name="call" size={18} color={Colors.primary} />
+        </TouchableOpacity>
       </View>
 
       <VoiceConversationModal
@@ -339,13 +409,21 @@ export default function ChatScreen() {
               onSubmitEditing={() => sendMessage(input)}
             />
           </View>
-          <TouchableOpacity
-            style={[styles.micBtn, listening && styles.micBtnActive]}
+          <Pressable
+            style={styles.micWrapper}
             onPress={() => (listening ? stopListening() : startListening())}
             disabled={isStreaming}
           >
-            <Ionicons name={listening ? 'mic' : 'mic-outline'} size={20} color={listening ? Colors.white : Colors.primary} />
-          </TouchableOpacity>
+            <Reanimated.View style={[styles.micPulseRing, micPulseStyle]} />
+            <LinearGradient
+              colors={listening ? [Colors.error, Colors.primary] : Colors.gradientHero}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.micBtn}
+            >
+              <Ionicons name={listening ? 'mic' : 'mic-outline'} size={18} color={Colors.background} />
+            </LinearGradient>
+          </Pressable>
           <TouchableOpacity
             style={[styles.sendBtn, (!input.trim() || isStreaming) && styles.sendBtnDisabled]}
             onPress={() => sendMessage(input)}
@@ -369,90 +447,25 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   flex: { flex: 1 },
 
-  header: {
-    backgroundColor: Colors.background,
-    overflow: 'hidden',
-  },
-  headerAccent: {
-    height: 3,
-    backgroundColor: Colors.primary,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  headerContent: {
+  orbHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 14,
+    backgroundColor: Colors.background,
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  headerAvatarWrapper: { position: 'relative' },
-  headerAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: Colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  headerAvatarText: {
-    color: Colors.white,
-    fontWeight: '800',
-    fontSize: 13,
-    letterSpacing: 0.5,
-  },
-  headerOnlineDot: {
-    position: 'absolute',
-    bottom: 1,
-    right: 1,
-    width: 11,
-    height: 11,
-    borderRadius: 6,
-    backgroundColor: Colors.success,
-    borderWidth: 2,
-    borderColor: Colors.surface,
-  },
-  headerBrand: {
-    color: Colors.text,
-    fontWeight: '800',
-    fontSize: 14,
-    letterSpacing: 1.5,
-  },
-  headerSubtitle: { color: Colors.textSecondary, fontSize: 11, marginTop: 1 },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  callBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  newChatBtn: {},
-  newChatInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+  orbCornerBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: Colors.card,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  newChatText: { color: Colors.primary, fontSize: 13, fontWeight: '700' },
+  orbCenter: { alignItems: 'center', gap: 8 },
+  orbStatusLabel: { color: Colors.textSecondary, fontSize: 12, fontWeight: '600', letterSpacing: 0.3 },
 
   list: { flex: 1, backgroundColor: Colors.background },
   listContent: { paddingVertical: 14 },
@@ -516,16 +529,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
     elevation: 0,
   },
+  micWrapper: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  micPulseRing: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.error,
+  },
   micBtn: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: Colors.card,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  micBtnActive: {
-    backgroundColor: Colors.error,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 5,
   },
   stopIcon: { alignItems: 'center', justifyContent: 'center' },
   stopSquare: {

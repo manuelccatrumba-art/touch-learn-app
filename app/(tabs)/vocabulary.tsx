@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { FlashCard as FlashCardType, FlashCardCategory } from '../../types';
+import { CEFRLevel, FlashCard as FlashCardType, FlashCardCategory } from '../../types';
 import { Colors } from '../../constants/Colors';
 import { CATEGORY_LABELS } from '../../constants/bookContent';
 import {
@@ -32,7 +32,11 @@ import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
 
 type Screen = 'home' | 'session';
 
-export default function VocabularyScreen() {
+interface Props {
+  level?: CEFRLevel | 'all'; // controlado pela Biblioteca; sem filtro adicional quando não fornecido
+}
+
+export default function VocabularyScreen({ level }: Props) {
   const params = useLocalSearchParams<{ category?: string; autostart?: string }>();
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>('home');
@@ -73,10 +77,9 @@ export default function VocabularyScreen() {
     setLoading(false);
   }
 
-  const filteredCards =
-    selectedCategory === 'all'
-      ? cards
-      : cards.filter((c) => c.category === selectedCategory);
+  const filteredCards = cards
+    .filter((c) => selectedCategory === 'all' || c.category === selectedCategory)
+    .filter((c) => !level || level === 'all' || CATEGORY_LABELS[c.category].level === level);
 
   const now = Date.now();
   const THREE_DAYS_MS = 3 * 86400000;

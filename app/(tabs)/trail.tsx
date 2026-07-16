@@ -15,9 +15,10 @@ import Reanimated, { useAnimatedStyle, useSharedValue, withSpring, FadeInUp } fr
 import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
 import { getCompletedNodes } from '../../services/pathProgress';
-import { getProgress } from '../../services/storage';
+import { getProgress, getFlashcards } from '../../services/storage';
+import { getDueCount } from '../../utils/spacedRepetition';
 import { getProfile, UserProfile } from '../../services/profile';
-import { CULTURE_NUGGETS, CULTURE_TYPE_LABELS } from '../../constants/culture';
+import { CULTURE_NUGGETS } from '../../constants/culture';
 import { UserProgress } from '../../types';
 import TutorFAB from '../../components/TutorFAB';
 import CircularProgress from '../../components/CircularProgress';
@@ -126,6 +127,7 @@ export default function TrailScreen() {
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [statsExpanded, setStatsExpanded] = useState(false);
+  const [dueCount, setDueCount] = useState(0);
   const heroScale = useSharedValue(1);
   const heroAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: heroScale.value }] }));
 
@@ -134,6 +136,7 @@ export default function TrailScreen() {
       getCompletedNodes().then(setCompleted);
       getProgress().then(setProgress);
       getProfile().then(setProfile);
+      getFlashcards().then((cards) => setDueCount(getDueCount(cards)));
     }, []),
   );
 
@@ -185,7 +188,6 @@ export default function TrailScreen() {
   const streak = progress?.currentStreak ?? 0;
 
   const dailyNugget = CULTURE_NUGGETS[dayOfYear() % CULTURE_NUGGETS.length];
-  const dailyMeta = CULTURE_TYPE_LABELS[dailyNugget.type];
 
   const animatedXP = useAnimatedNumber({ value: progress?.xp ?? 0 });
   const level = progress?.level ?? 1;
@@ -234,42 +236,53 @@ export default function TrailScreen() {
           onPressIn={() => { heroScale.value = withSpring(0.97); }}
           onPressOut={() => { heroScale.value = withSpring(1); }}
         >
-          <Reanimated.View style={[styles.hero, heroAnimatedStyle]}>
-          <View style={styles.heroTopRow}>
-            <View style={styles.heroIconBadge}>
-              <Text style={styles.heroIconText}>{currentNode.icon}</Text>
+          <Reanimated.View style={heroAnimatedStyle}>
+          <LinearGradient
+            colors={Colors.gradientHero}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.4, y: 1 }}
+            style={styles.hero}
+          >
+            <View style={[styles.heroDecorCircle, styles.heroDecorCircleA]} />
+            <View style={[styles.heroDecorCircle, styles.heroDecorCircleB]} />
+
+            <View style={styles.heroTopRow}>
+              <View style={styles.heroIconBadge}>
+                <Ionicons
+                  name={currentNode.type === 'grammar' ? 'help-circle' : 'book'}
+                  size={20}
+                  color={Colors.background}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.heroEyebrow}>CONTINUAR</Text>
+                <Text style={styles.heroTitle}>{currentNode.title}</Text>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.heroEyebrow}>CONTINUAR</Text>
-              <Text style={styles.heroTitle}>{currentNode.title}</Text>
+            <Text style={styles.heroSubtitle}>
+              {currentNode.type === 'grammar' ? 'Exercício de gramática' : 'Revisão de vocabulário'}
+            </Text>
+            <View style={styles.heroProgressTrack}>
+              <View
+                style={[styles.heroProgressFill, { width: `${Math.round(Math.min(1, Math.max(0, overallPct)) * 100)}%` }]}
+              />
             </View>
-          </View>
-          <Text style={styles.heroSubtitle}>
-            {currentNode.type === 'grammar' ? 'Exercício de gramática' : 'Revisão de vocabulário'}
-          </Text>
-          <View style={styles.heroProgressTrack}>
-            <LinearGradient
-              colors={[Colors.primary, Colors.primaryLight]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.heroProgressFill, { width: `${Math.round(Math.min(1, Math.max(0, overallPct)) * 100)}%` }]}
-            />
-          </View>
-          <View style={styles.heroFooter}>
-            <Text style={styles.heroPercent}>{Math.round(overallPct * 100)}% da trilha concluída</Text>
-            <View style={styles.heroCta}>
-              <Text style={styles.heroCtaText}>Continuar</Text>
-              <Ionicons name="arrow-forward" size={16} color={Colors.background} />
+            <View style={styles.heroFooter}>
+              <Text style={styles.heroPercent}>{Math.round(overallPct * 100)}% da trilha concluída</Text>
+              <View style={styles.heroCta}>
+                <Text style={styles.heroCtaText}>Continuar</Text>
+                <Ionicons name="arrow-forward" size={16} color={Colors.primaryLight} />
+              </View>
             </View>
-          </View>
+          </LinearGradient>
           </Reanimated.View>
         </Pressable>
       ) : (
-        <View style={styles.hero}>
+        <LinearGradient colors={Colors.gradientHero} start={{ x: 0, y: 0 }} end={{ x: 0.4, y: 1 }} style={styles.hero}>
           <Text style={styles.heroEyebrow}>PARABÉNS</Text>
           <Text style={styles.heroTitle}>🏆 Trilha completa!</Text>
           <Text style={styles.heroSubtitle}>Voltaste a praticar qualquer lição a partir dos separadores.</Text>
-        </View>
+        </LinearGradient>
       )}
 
       <View style={styles.sectionHeaderRow}>
@@ -282,41 +295,38 @@ export default function TrailScreen() {
       </ScrollView>
 
       <Pressable
-        style={({ pressed }) => [styles.dailyCard, pressed && { opacity: 0.9 }]}
+        style={({ pressed }) => [styles.dailyCard, pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] }]}
         onPress={() => router.push('/culture')}
       >
-        <View style={styles.dailyTopRow}>
-          <View style={[styles.dailyChip, { backgroundColor: dailyMeta.color + '22' }]}>
-            <Text style={[styles.dailyChipText, { color: dailyMeta.color }]}>
-              {dailyMeta.emoji} Frase do dia · {dailyNugget.level}
-            </Text>
-          </View>
-          <Ionicons name="arrow-forward-circle-outline" size={20} color={Colors.textMuted} />
+        <View style={styles.dailyIconBadge}>
+          <Ionicons name="book" size={16} color={Colors.background} />
         </View>
-        <Text style={styles.dailyPhrase}>{dailyNugget.phrase}</Text>
-        <Text style={styles.dailyTranslation}>{dailyNugget.translation}</Text>
+        <Text style={styles.dailyPhrase} numberOfLines={1}>{dailyNugget.phrase}</Text>
         <Pressable
-          style={({ pressed }) => [styles.dailyPracticeBtn, pressed && { opacity: 0.85 }]}
+          style={({ pressed }) => [styles.dailyPracticeBtn, pressed && { opacity: 0.8 }]}
           onPress={() =>
             router.push({
               pathname: '/chat',
               params: { seedPhrase: dailyNugget.phrase, seedTranslation: dailyNugget.translation },
             })
           }
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.dailyPracticeBtnText}>Praticar com o Tutor →</Text>
+          <Ionicons name="chatbubble-ellipses" size={16} color={Colors.primary} />
         </Pressable>
       </Pressable>
 
-      <View style={styles.weekCard}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionHeader}>Esta semana</Text>
-          <Text style={styles.weekMinutes}>
-            {weekTotal}<Text style={styles.weekMinutesMuted}> / {WEEKLY_GOAL} atividades</Text>
-          </Text>
+      <View style={styles.miniStatsRow}>
+        <View style={styles.miniStatCard}>
+          <Ionicons name="calendar" size={16} color={Colors.success} />
+          <Text style={styles.miniStatValue}>{weekTotal}/{WEEKLY_GOAL}</Text>
+          <Text style={styles.miniStatLabel}>esta semana</Text>
         </View>
-        <WeekChart data={weeklyActivity} todayIdx={todayIdx} />
-        <ProgressBar value={weekTotal / WEEKLY_GOAL} color={Colors.success} />
+        <Pressable style={styles.miniStatCard} onPress={() => router.push('/library')}>
+          <Ionicons name="albums" size={16} color={Colors.error} />
+          <Text style={styles.miniStatValue}>{dueCount}</Text>
+          <Text style={styles.miniStatLabel}>a rever hoje</Text>
+        </Pressable>
       </View>
 
       <TouchableOpacity style={styles.expandToggle} onPress={() => setStatsExpanded((v) => !v)} activeOpacity={0.7}>
@@ -327,6 +337,17 @@ export default function TrailScreen() {
 
       {statsExpanded && progress && (
         <Reanimated.View entering={FadeInUp.duration(250)}>
+          <View style={styles.weekCard}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionHeader}>Esta semana</Text>
+              <Text style={styles.weekMinutes}>
+                {weekTotal}<Text style={styles.weekMinutesMuted}> / {WEEKLY_GOAL} atividades</Text>
+              </Text>
+            </View>
+            <WeekChart data={weeklyActivity} todayIdx={todayIdx} />
+            <ProgressBar value={weekTotal / WEEKLY_GOAL} color={Colors.success} />
+          </View>
+
           <View style={styles.levelBox}>
             <View style={styles.levelTopRow}>
               <CircularProgress
@@ -437,61 +458,65 @@ const styles = StyleSheet.create({
   streakDotDim: { backgroundColor: Colors.card },
 
   hero: {
-    backgroundColor: Colors.surface,
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 20,
     marginBottom: 28,
-    borderWidth: 1,
-    borderColor: Colors.primary + '59',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.error,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 18,
     elevation: 8,
   },
+  heroDecorCircle: {
+    position: 'absolute',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  heroDecorCircleA: { width: 140, height: 140, top: -50, right: -40 },
+  heroDecorCircleB: { width: 90, height: 90, bottom: -30, left: -20, backgroundColor: 'rgba(255,255,255,0.08)' },
   heroTopRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   heroIconBadge: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: Colors.error + '26',
+    backgroundColor: 'rgba(255,255,255,0.22)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  heroIconText: { fontSize: 19 },
-  heroEyebrow: { color: Colors.primary, fontSize: 11, fontWeight: '700', letterSpacing: 1.2 },
-  heroTitle: { color: Colors.text, fontSize: 19, fontWeight: '700', marginTop: 3 },
-  heroSubtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 10 },
+  heroEyebrow: { color: '#3a2405', fontSize: 11, fontWeight: '800', letterSpacing: 1.2, opacity: 0.75 },
+  heroTitle: { color: '#3a2405', fontSize: 19, fontWeight: '800', marginTop: 3 },
+  heroSubtitle: { color: '#3a2405', fontSize: 13, marginTop: 10, opacity: 0.8 },
   heroProgressTrack: {
     height: 7,
     borderRadius: 4,
-    backgroundColor: Colors.primaryDeep,
+    backgroundColor: 'rgba(0,0,0,0.18)',
     overflow: 'hidden',
     marginTop: 14,
   },
-  heroProgressFill: { height: '100%', borderRadius: 4 },
+  heroProgressFill: { height: '100%', borderRadius: 4, backgroundColor: Colors.background },
   heroFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 14,
   },
-  heroPercent: { color: Colors.textMuted, fontSize: 12 },
+  heroPercent: { color: '#3a2405', fontSize: 12, opacity: 0.8, fontWeight: '600' },
   heroCta: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.background,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 14,
     gap: 6,
-    shadowColor: Colors.primary,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  heroCtaText: { color: Colors.background, fontWeight: '700', fontSize: 13 },
+  heroCtaText: { color: Colors.primaryLight, fontWeight: '800', fontSize: 13 },
 
   sectionHeaderRow: {
     flexDirection: 'row',
@@ -507,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
   },
-  moduleCardPressed: { opacity: 0.85 },
+  moduleCardPressed: { opacity: 0.85, transform: [{ scale: 0.97 }] },
   moduleBadge: {
     width: 32,
     height: 32,
@@ -525,28 +550,35 @@ const styles = StyleSheet.create({
   dailyCard: {
     marginTop: 24,
     backgroundColor: Colors.surface,
-    borderRadius: 18,
-    padding: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  dailyTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  dailyChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  dailyChipText: { fontSize: 11, fontWeight: '700' },
-  dailyPhrase: { color: Colors.text, fontSize: 18, fontWeight: '700', lineHeight: 24 },
-  dailyTranslation: { color: Colors.textMuted, fontSize: 13, marginTop: 4 },
-  dailyPracticeBtn: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.primary,
-    borderRadius: 20,
+    borderRadius: 14,
+    paddingVertical: 12,
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginTop: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  dailyPracticeBtnText: { color: Colors.background, fontWeight: '700', fontSize: 12.5 },
+  dailyIconBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dailyPhrase: { flex: 1, color: Colors.text, fontSize: 14, fontWeight: '600' },
+  dailyPracticeBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: Colors.primary + '22',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   weekCard: {
     marginTop: 28,
@@ -572,6 +604,18 @@ const styles = StyleSheet.create({
   weekCol: { alignItems: 'center', flex: 1 },
   weekBar: { width: 10, borderRadius: 4 },
   weekLabel: { color: Colors.textMuted, fontSize: 11, marginTop: 6 },
+
+  miniStatsRow: { flexDirection: 'row', gap: 10, marginTop: 24 },
+  miniStatCard: {
+    flex: 1,
+    backgroundColor: Colors.surface,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    gap: 3,
+  },
+  miniStatValue: { color: Colors.text, fontSize: 16, fontWeight: '800' },
+  miniStatLabel: { color: Colors.textMuted, fontSize: 11 },
 
   expandToggle: { alignItems: 'center', marginTop: 20, paddingVertical: 8 },
   expandToggleText: { color: Colors.primary, fontSize: 13, fontWeight: '700' },

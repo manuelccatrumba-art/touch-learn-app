@@ -9,9 +9,15 @@ import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const TYPES = Object.keys(CULTURE_TYPE_LABELS) as CultureType[];
 
-export default function CultureScreen() {
+interface Props {
+  level?: CEFRLevel | 'all'; // controlado pela Biblioteca; esconde o filtro de nível próprio
+}
+
+export default function CultureScreen({ level: levelProp }: Props) {
   const [selectedType, setSelectedType] = useState<CultureType | 'all'>('all');
-  const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'all'>('all');
+  const [selectedLevelLocal, setSelectedLevelLocal] = useState<CEFRLevel | 'all'>('all');
+  const isControlled = levelProp !== undefined;
+  const selectedLevel = isControlled ? levelProp : selectedLevelLocal;
 
   const filtered = useMemo(() => {
     return CULTURE_NUGGETS.filter((n) => {
@@ -64,26 +70,28 @@ export default function CultureScreen() {
         })}
       </FadeEdgeScrollView>
 
-      <FadeEdgeScrollView
-        style={styles.levelScroll}
-        contentContainerStyle={styles.filterContent}
-      >
-        <TouchableOpacity
-          style={[styles.levelChip, selectedLevel === 'all' && styles.levelChipActive]}
-          onPress={() => setSelectedLevel('all')}
+      {!isControlled && (
+        <FadeEdgeScrollView
+          style={styles.levelScroll}
+          contentContainerStyle={styles.filterContent}
         >
-          <Text style={[styles.levelChipText, selectedLevel === 'all' && styles.levelChipTextActive]}>Todos os níveis</Text>
-        </TouchableOpacity>
-        {LEVELS.map((lvl) => (
           <TouchableOpacity
-            key={lvl}
-            style={[styles.levelChip, selectedLevel === lvl && styles.levelChipActive]}
-            onPress={() => setSelectedLevel(lvl)}
+            style={[styles.levelChip, selectedLevel === 'all' && styles.levelChipActive]}
+            onPress={() => setSelectedLevelLocal('all')}
           >
-            <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
+            <Text style={[styles.levelChipText, selectedLevel === 'all' && styles.levelChipTextActive]}>Todos os níveis</Text>
           </TouchableOpacity>
-        ))}
-      </FadeEdgeScrollView>
+          {LEVELS.map((lvl) => (
+            <TouchableOpacity
+              key={lvl}
+              style={[styles.levelChip, selectedLevel === lvl && styles.levelChipActive]}
+              onPress={() => setSelectedLevelLocal(lvl)}
+            >
+              <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
+            </TouchableOpacity>
+          ))}
+        </FadeEdgeScrollView>
+      )}
 
       <ScrollView contentContainerStyle={styles.list}>
         {filtered.length === 0 ? (

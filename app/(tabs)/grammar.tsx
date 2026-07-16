@@ -18,11 +18,17 @@ import { markNodeComplete } from '../../services/pathProgress';
 import { LEARNING_PATH } from '../../constants/path';
 import { CEFRLevel } from '../../types';
 import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
+import { getCompletedNodes } from '../../services/pathProgress';
+import IconBadge from '../../components/IconBadge';
 
 type Screen = 'home' | 'note' | 'exercise';
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-export default function GrammarScreen() {
+interface Props {
+  level?: CEFRLevel | 'all'; // controlled: quando fornecido (via Biblioteca), esconde o filtro próprio
+}
+
+export default function GrammarScreen({ level: levelProp }: Props) {
   const params = useLocalSearchParams<{ noteId?: string; autostart?: string }>();
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>('home');
@@ -31,9 +37,16 @@ export default function GrammarScreen() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [sessionDone, setSessionDone] = useState(false);
   const [celebration, setCelebration] = useState<{ xp: number; next: { title: string; icon: string } | null } | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'all'>('all');
+  const [selectedLevelLocal, setSelectedLevelLocal] = useState<CEFRLevel | 'all'>('all');
+  const [completed, setCompleted] = useState<string[]>([]);
+  const isControlled = levelProp !== undefined;
+  const selectedLevel = isControlled ? levelProp : selectedLevelLocal;
   const viaPath = !!params.noteId;
   const visibleNotes = selectedLevel === 'all' ? GRAMMAR_NOTES : GRAMMAR_NOTES.filter((n) => n.level === selectedLevel);
+
+  useEffect(() => {
+    getCompletedNodes().then(setCompleted);
+  }, [screen]);
 
   const noteExercises = GRAMMAR_EXERCISES.filter((e) => e.noteId === selectedNoteId);
 
@@ -185,27 +198,30 @@ export default function GrammarScreen() {
         </View>
       </View>
 
-      <FadeEdgeScrollView style={styles.levelScroll} contentContainerStyle={styles.levelFilterContent}>
-        <TouchableOpacity
-          style={[styles.levelChip, selectedLevel === 'all' && styles.levelChipActive]}
-          onPress={() => setSelectedLevel('all')}
-        >
-          <Text style={[styles.levelChipText, selectedLevel === 'all' && styles.levelChipTextActive]}>Todos os níveis</Text>
-        </TouchableOpacity>
-        {LEVELS.map((lvl) => (
+      {!isControlled && (
+        <FadeEdgeScrollView style={styles.levelScroll} contentContainerStyle={styles.levelFilterContent}>
           <TouchableOpacity
-            key={lvl}
-            style={[styles.levelChip, selectedLevel === lvl && styles.levelChipActive]}
-            onPress={() => setSelectedLevel(lvl)}
+            style={[styles.levelChip, selectedLevel === 'all' && styles.levelChipActive]}
+            onPress={() => setSelectedLevelLocal('all')}
           >
-            <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
+            <Text style={[styles.levelChipText, selectedLevel === 'all' && styles.levelChipTextActive]}>Todos os níveis</Text>
           </TouchableOpacity>
-        ))}
-      </FadeEdgeScrollView>
+          {LEVELS.map((lvl) => (
+            <TouchableOpacity
+              key={lvl}
+              style={[styles.levelChip, selectedLevel === lvl && styles.levelChipActive]}
+              onPress={() => setSelectedLevelLocal(lvl)}
+            >
+              <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
+            </TouchableOpacity>
+          ))}
+        </FadeEdgeScrollView>
+      )}
 
       <ScrollView contentContainerStyle={styles.homeContent}>
-        {visibleNotes.map((note, index) => {
+        {visibleNotes.map((note) => {
           const exercises = GRAMMAR_EXERCISES.filter((e) => e.noteId === note.id);
+          const done = completed.includes(note.id);
           return (
             <TouchableOpacity
               key={note.id}
@@ -213,11 +229,8 @@ export default function GrammarScreen() {
               onPress={() => startNote(note.id)}
               activeOpacity={0.75}
             >
-              <View style={styles.noteIndexBadge}>
-                <Text style={styles.noteIndexText}>{index + 1}</Text>
-              </View>
+              <IconBadge name="help-circle" color={Colors.error} size={18} badgeSize={36} />
               <View style={styles.noteLeft}>
-                <Text style={styles.noteEmoji}>{note.icon}</Text>
                 <View style={styles.noteInfo}>
                   <Text style={styles.noteId}>{note.id}</Text>
                   <Text style={styles.noteTitle}>{note.title}</Text>
@@ -225,6 +238,7 @@ export default function GrammarScreen() {
                 </View>
               </View>
               <View style={styles.noteRight}>
+                {done && <Ionicons name="checkmark-circle" size={18} color={Colors.success} />}
                 <Text style={styles.levelBadge}>{note.level}</Text>
                 <Text style={styles.exCountBadge}>{exercises.length}</Text>
                 <Ionicons name="chevron-forward" size={16} color={Colors.primary} />
@@ -295,24 +309,14 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.18,
     shadowRadius: 6,
     elevation: 3,
   },
-  noteIndexBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: Colors.primaryDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  noteIndexText: { color: Colors.primaryLight, fontSize: 10, fontWeight: '700' },
-  noteLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  noteEmoji: { fontSize: 26, width: 34 },
+  noteLeft: { flex: 1 },
   noteInfo: { flex: 1 },
   noteId: { color: Colors.primary, fontSize: 10, fontWeight: '800', marginBottom: 1, letterSpacing: 0.5 },
   noteTitle: { color: Colors.text, fontSize: 15, fontWeight: '700' },
