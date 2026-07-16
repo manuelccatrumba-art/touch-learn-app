@@ -199,7 +199,7 @@ export default function ChatScreen() {
         const errMsg: Message = {
           id: makeId(),
           role: 'assistant',
-          content: `⚠️ ${err.message}\n\nVerifique sua conexão e chave de API no arquivo .env`,
+          content: `⚠️ ${err.message}`,
           timestamp: Date.now(),
         };
         const finalConv = { ...updatedConv, messages: [...updatedMessages, errMsg], updatedAt: Date.now() };

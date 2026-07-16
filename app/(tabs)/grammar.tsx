@@ -16,8 +16,11 @@ import LessonCompleteModal from '../../components/LessonCompleteModal';
 import { incrementProgress, addXP } from '../../services/storage';
 import { markNodeComplete } from '../../services/pathProgress';
 import { LEARNING_PATH } from '../../constants/path';
+import { CEFRLevel } from '../../types';
+import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
 
 type Screen = 'home' | 'note' | 'exercise';
+const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 export default function GrammarScreen() {
   const params = useLocalSearchParams<{ noteId?: string; autostart?: string }>();
@@ -28,7 +31,9 @@ export default function GrammarScreen() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [sessionDone, setSessionDone] = useState(false);
   const [celebration, setCelebration] = useState<{ xp: number; next: { title: string; icon: string } | null } | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<CEFRLevel | 'all'>('all');
   const viaPath = !!params.noteId;
+  const visibleNotes = selectedLevel === 'all' ? GRAMMAR_NOTES : GRAMMAR_NOTES.filter((n) => n.level === selectedLevel);
 
   const noteExercises = GRAMMAR_EXERCISES.filter((e) => e.noteId === selectedNoteId);
 
@@ -180,8 +185,26 @@ export default function GrammarScreen() {
         </View>
       </View>
 
+      <FadeEdgeScrollView style={styles.levelScroll} contentContainerStyle={styles.levelFilterContent}>
+        <TouchableOpacity
+          style={[styles.levelChip, selectedLevel === 'all' && styles.levelChipActive]}
+          onPress={() => setSelectedLevel('all')}
+        >
+          <Text style={[styles.levelChipText, selectedLevel === 'all' && styles.levelChipTextActive]}>Todos os níveis</Text>
+        </TouchableOpacity>
+        {LEVELS.map((lvl) => (
+          <TouchableOpacity
+            key={lvl}
+            style={[styles.levelChip, selectedLevel === lvl && styles.levelChipActive]}
+            onPress={() => setSelectedLevel(lvl)}
+          >
+            <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
+          </TouchableOpacity>
+        ))}
+      </FadeEdgeScrollView>
+
       <ScrollView contentContainerStyle={styles.homeContent}>
-        {GRAMMAR_NOTES.map((note, index) => {
+        {visibleNotes.map((note, index) => {
           const exercises = GRAMMAR_EXERCISES.filter((e) => e.noteId === note.id);
           return (
             <TouchableOpacity
@@ -250,6 +273,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerBadgeText: { color: Colors.white, fontWeight: '800', fontSize: 13, letterSpacing: 1 },
+
+  levelScroll: { maxHeight: 44, flexGrow: 0, marginTop: 4 },
+  levelFilterContent: { paddingLeft: 16, paddingRight: 28, gap: 8, alignItems: 'center', paddingBottom: 4 },
+  levelChip: {
+    backgroundColor: 'transparent',
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  levelChipActive: { backgroundColor: Colors.primaryDeep, borderColor: Colors.gold },
+  levelChipText: { color: Colors.textMuted, fontSize: 11, fontWeight: '700' },
+  levelChipTextActive: { color: Colors.gold },
 
   homeContent: { padding: 16, gap: 12 },
   noteCard: {

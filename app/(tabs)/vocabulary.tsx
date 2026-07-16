@@ -28,6 +28,7 @@ import { markNodeComplete } from '../../services/pathProgress';
 import { LEARNING_PATH } from '../../constants/path';
 import FlashCardComponent from '../../components/FlashCard';
 import LessonCompleteModal from '../../components/LessonCompleteModal';
+import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
 
 type Screen = 'home' | 'session';
 
@@ -204,9 +205,7 @@ export default function VocabularyScreen() {
       )}
 
       {/* Category filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <FadeEdgeScrollView
         style={styles.filterScroll}
         contentContainerStyle={styles.filterContent}
       >
@@ -233,7 +232,7 @@ export default function VocabularyScreen() {
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </FadeEdgeScrollView>
 
       {/* Card list */}
       <ScrollView contentContainerStyle={styles.cardList}>
@@ -359,7 +358,7 @@ const styles = StyleSheet.create({
   dueBannerArrowText: { color: Colors.white, fontSize: 18, fontWeight: '700' },
 
   filterScroll: { maxHeight: 52, flexGrow: 0 },
-  filterContent: { paddingHorizontal: 14, gap: 8, alignItems: 'center', paddingBottom: 4 },
+  filterContent: { paddingLeft: 14, paddingRight: 28, gap: 8, alignItems: 'center', paddingBottom: 4 },
   filterChip: {
     backgroundColor: Colors.card,
     borderRadius: 20,

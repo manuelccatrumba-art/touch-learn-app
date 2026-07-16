@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
@@ -188,13 +189,25 @@ export default function TrailScreen() {
 
       {currentNode ? (
         <Pressable style={({ pressed }) => [styles.hero, pressed && { opacity: 0.9 }]} onPress={() => openNode(currentNode)}>
-          <Text style={styles.heroEyebrow}>CONTINUAR</Text>
-          <Text style={styles.heroTitle}>{currentNode.icon} {currentNode.title}</Text>
+          <View style={styles.heroTopRow}>
+            <View style={styles.heroIconBadge}>
+              <Text style={styles.heroIconText}>{currentNode.icon}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.heroEyebrow}>CONTINUAR</Text>
+              <Text style={styles.heroTitle}>{currentNode.title}</Text>
+            </View>
+          </View>
           <Text style={styles.heroSubtitle}>
             {currentNode.type === 'grammar' ? 'Exercício de gramática' : 'Revisão de vocabulário'}
           </Text>
-          <View style={{ marginTop: 14 }}>
-            <ProgressBar value={overallPct} color={Colors.primary} trackColor={Colors.primaryDeep} />
+          <View style={styles.heroProgressTrack}>
+            <LinearGradient
+              colors={[Colors.primary, Colors.primaryLight]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.heroProgressFill, { width: `${Math.round(Math.min(1, Math.max(0, overallPct)) * 100)}%` }]}
+            />
           </View>
           <View style={styles.heroFooter}>
             <Text style={styles.heroPercent}>{Math.round(overallPct * 100)}% da trilha concluída</Text>
@@ -301,15 +314,35 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 28,
-    shadowColor: '#000',
+    borderWidth: 1,
+    borderColor: Colors.primary + '59',
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 4,
+    shadowRadius: 16,
+    elevation: 8,
   },
+  heroTopRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  heroIconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: Colors.error + '26',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroIconText: { fontSize: 19 },
   heroEyebrow: { color: Colors.primary, fontSize: 11, fontWeight: '700', letterSpacing: 1.2 },
-  heroTitle: { color: Colors.text, fontSize: 19, fontWeight: '700', marginTop: 6 },
-  heroSubtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 2 },
+  heroTitle: { color: Colors.text, fontSize: 19, fontWeight: '700', marginTop: 3 },
+  heroSubtitle: { color: Colors.textMuted, fontSize: 13, marginTop: 10 },
+  heroProgressTrack: {
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: Colors.primaryDeep,
+    overflow: 'hidden',
+    marginTop: 14,
+  },
+  heroProgressFill: { height: '100%', borderRadius: 4 },
   heroFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -325,6 +358,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 14,
     gap: 6,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
   },
   heroCtaText: { color: Colors.background, fontWeight: '700', fontSize: 13 },
 

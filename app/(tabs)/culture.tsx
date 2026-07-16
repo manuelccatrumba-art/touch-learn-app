@@ -4,6 +4,7 @@ import { Colors } from '../../constants/Colors';
 import { CULTURE_NUGGETS, CULTURE_TYPE_LABELS, CultureType } from '../../constants/culture';
 import { CEFRLevel } from '../../types';
 import CultureCard from '../../components/CultureCard';
+import FadeEdgeScrollView from '../../components/FadeEdgeScrollView';
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const TYPES = Object.keys(CULTURE_TYPE_LABELS) as CultureType[];
@@ -35,9 +36,7 @@ export default function CultureScreen() {
         </View>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <FadeEdgeScrollView
         style={styles.filterScroll}
         contentContainerStyle={styles.filterContent}
       >
@@ -63,11 +62,9 @@ export default function CultureScreen() {
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </FadeEdgeScrollView>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <FadeEdgeScrollView
         style={styles.levelScroll}
         contentContainerStyle={styles.filterContent}
       >
@@ -86,7 +83,7 @@ export default function CultureScreen() {
             <Text style={[styles.levelChipText, selectedLevel === lvl && styles.levelChipTextActive]}>{lvl}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </FadeEdgeScrollView>
 
       <ScrollView contentContainerStyle={styles.list}>
         {filtered.length === 0 ? (
@@ -138,7 +135,7 @@ const styles = StyleSheet.create({
 
   filterScroll: { maxHeight: 48, flexGrow: 0 },
   levelScroll: { maxHeight: 44, flexGrow: 0, marginBottom: 6 },
-  filterContent: { paddingHorizontal: 14, gap: 8, alignItems: 'center', paddingBottom: 4 },
+  filterContent: { paddingLeft: 14, paddingRight: 28, gap: 8, alignItems: 'center', paddingBottom: 4 },
 
   filterChip: {
     backgroundColor: Colors.card,
