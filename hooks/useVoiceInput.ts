@@ -7,9 +7,13 @@ import {
 export function useVoiceInput(onResult: (text: string, isFinal: boolean) => void) {
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [volume, setVolume] = useState(0);
 
   useSpeechRecognitionEvent('start', () => setListening(true));
-  useSpeechRecognitionEvent('end', () => setListening(false));
+  useSpeechRecognitionEvent('end', () => {
+    setListening(false);
+    setVolume(0);
+  });
   useSpeechRecognitionEvent('result', (event) => {
     const transcript = event.results[0]?.transcript;
     if (transcript) onResult(transcript, event.isFinal);
@@ -17,6 +21,11 @@ export function useVoiceInput(onResult: (text: string, isFinal: boolean) => void
   useSpeechRecognitionEvent('error', (event) => {
     setListening(false);
     setError(event.message || event.error);
+  });
+  // `value` ranges roughly -2..10; anything below 0 counts as inaudible.
+  // Normalized to 0..1 for driving UI (e.g. a voice-reactive orb).
+  useSpeechRecognitionEvent('volumechange', (event) => {
+    setVolume(Math.max(0, Math.min(1, event.value / 10)));
   });
 
   const start = useCallback(async () => {
@@ -30,6 +39,7 @@ export function useVoiceInput(onResult: (text: string, isFinal: boolean) => void
       lang: 'en-US',
       interimResults: true,
       continuous: false,
+      volumeChangeEventOptions: { enabled: true, intervalMillis: 100 },
     });
   }, []);
 
@@ -37,5 +47,5 @@ export function useVoiceInput(onResult: (text: string, isFinal: boolean) => void
     ExpoSpeechRecognitionModule.stop();
   }, []);
 
-  return { listening, error, start, stop };
+  return { listening, error, volume, start, stop };
 }

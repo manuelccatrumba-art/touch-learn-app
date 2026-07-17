@@ -7,11 +7,19 @@ import {
   Pressable,
   TouchableOpacity,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
-import Reanimated, { useAnimatedStyle, useSharedValue, withSpring, FadeInUp } from 'react-native-reanimated';
+import Reanimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withSequence,
+  withTiming,
+  FadeInUp,
+} from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
 import { getCompletedNodes } from '../../services/pathProgress';
@@ -131,12 +139,47 @@ export default function TrailScreen() {
   const heroScale = useSharedValue(1);
   const heroAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: heroScale.value }] }));
 
+  const flameScale = useSharedValue(1);
+  const flameRotate = useSharedValue(0);
+  const badgeGlow = useSharedValue(0);
+  const flameAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: flameScale.value }, { rotate: `${flameRotate.value}deg` }],
+  }));
+  const badgeGlowStyle = useAnimatedStyle(() => ({ opacity: badgeGlow.value }));
+
+  function bounceStreak() {
+    flameScale.value = withSequence(
+      withSpring(1.6, { damping: 4, stiffness: 300 }),
+      withSpring(1, { damping: 6, stiffness: 200 }),
+    );
+    flameRotate.value = withSequence(
+      withTiming(-14, { duration: 90 }),
+      withTiming(14, { duration: 140 }),
+      withTiming(0, { duration: 140 }),
+    );
+    badgeGlow.value = withSequence(withTiming(1, { duration: 120 }), withTiming(0, { duration: 500 }));
+  }
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function loadAll() {
+    await Promise.all([
+      getCompletedNodes().then(setCompleted),
+      getProgress().then(setProgress),
+      getProfile().then(setProfile),
+      getFlashcards().then((cards) => setDueCount(getDueCount(cards))),
+    ]);
+  }
+
+  async function onRefresh() {
+    setRefreshing(true);
+    await loadAll();
+    setRefreshing(false);
+  }
+
   useFocusEffect(
     useCallback(() => {
-      getCompletedNodes().then(setCompleted);
-      getProgress().then(setProgress);
-      getProfile().then(setProfile);
-      getFlashcards().then((cards) => setDueCount(getDueCount(cards)));
+      loadAll();
     }, []),
   );
 
@@ -201,7 +244,13 @@ export default function TrailScreen() {
 
   return (
     <View style={styles.flex}>
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} colors={[Colors.primary]} />
+      }
+    >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           {profile?.avatarEmoji && (
@@ -221,10 +270,15 @@ export default function TrailScreen() {
             <Ionicons name="star" size={14} color={Colors.gold} />
             <Text style={styles.xpNumber}>{animatedXP}</Text>
           </View>
-          <View style={styles.streakBadge}>
-            <Ionicons name="flame" size={16} color={Colors.primary} />
-            <Text style={styles.streakNumber}>{streak}</Text>
-          </View>
+          <Pressable onPress={bounceStreak}>
+            <View style={styles.streakBadge}>
+              <Reanimated.View style={[styles.streakGlow, badgeGlowStyle]} />
+              <Reanimated.View style={flameAnimatedStyle}>
+                <Ionicons name="flame" size={16} color={Colors.primary} />
+              </Reanimated.View>
+              <Text style={styles.streakNumber}>{streak}</Text>
+            </View>
+          </Pressable>
         </View>
       </View>
 
@@ -449,6 +503,16 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     gap: 4,
+    position: 'relative',
+  },
+  streakGlow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: Colors.tangerine,
+    borderRadius: 20,
   },
   streakNumber: { color: Colors.primary, fontWeight: '700', fontSize: 14 },
 
@@ -462,7 +526,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 28,
     overflow: 'hidden',
-    shadowColor: Colors.error,
+    shadowColor: Colors.coral,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 18,

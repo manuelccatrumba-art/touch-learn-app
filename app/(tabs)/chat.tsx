@@ -59,7 +59,7 @@ function TutorOrb() {
   return (
     <Reanimated.View style={[orbStyles.wrapper, animatedStyle]}>
       <LinearGradient
-        colors={['#ffc466', '#f0a83f', '#e6455a']}
+        colors={['#ffc93c', '#ff9d4d', '#ff6b7a']}
         locations={[0, 0.55, 1]}
         start={{ x: 0.15, y: 0.1 }}
         end={{ x: 0.9, y: 1 }}
@@ -124,7 +124,7 @@ export default function ChatScreen() {
   const [voiceCaption, setVoiceCaption] = useState('');
   const voiceCallOpenRef = useRef(false);
 
-  const { listening, error: voiceError, start: startListening, stop: stopListening } = useVoiceInput(
+  const { listening, error: voiceError, volume: micVolume, start: startListening, stop: stopListening } = useVoiceInput(
     (transcript, isFinal) => {
       if (voiceCallOpenRef.current) {
         setVoiceCaption(transcript || 'A ouvir...');
@@ -349,6 +349,7 @@ export default function ChatScreen() {
         visible={voiceCallOpen}
         state={voiceCallState}
         caption={voiceCaption}
+        volume={micVolume}
         onClose={closeVoiceCall}
       />
 
@@ -416,7 +417,7 @@ export default function ChatScreen() {
           >
             <Reanimated.View style={[styles.micPulseRing, micPulseStyle]} />
             <LinearGradient
-              colors={listening ? [Colors.error, Colors.primary] : Colors.gradientHero}
+              colors={listening ? [Colors.coral, Colors.tangerine] : Colors.gradientHero}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.micBtn}
@@ -535,7 +536,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.error,
+    backgroundColor: Colors.coral,
   },
   micBtn: {
     width: 40,

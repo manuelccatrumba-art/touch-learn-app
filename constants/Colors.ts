@@ -1,6 +1,8 @@
 // Touch Learn Interativo — Brand Colors
-// Dark "study-at-night" palette: deep ink navy background, warm-to-hot
-// orange→red gradient for momentum/achievement, mint for completion.
+// Dark "study-at-night" palette: deep ink navy background, warm coral→
+// tangerine→gold→blush spectrum for identity (used in fluid multi-stop
+// gradients, never as isolated contrasting colors), mint reserved strictly
+// for success/completion states.
 export const Colors = {
   // Backgrounds
   background: '#0d1224',
@@ -9,34 +11,42 @@ export const Colors = {
   card: '#1b2340',
   cardGlass: 'rgba(255,255,255,0.05)',
   border: '#2A3550',
-  borderGlow: 'rgba(240,168,63,0.5)',
+  borderGlow: 'rgba(255,157,77,0.5)',
 
-  // Brand — orange→red gradient (momentum, achievement)
-  primary: '#f0a83f',
-  primaryDark: '#c9822a',
+  // Brand spectrum — coral, tangerine, gold, blush (use 2-3 together in
+  // gradients per element; never pair against error red)
+  coral: '#ff6b7a',
+  tangerine: '#ff9d4d',
+  goldSpectrum: '#ffc93c',
+  blush: '#ff8fb1',
+  spectrum: ['#ff6b7a', '#ff9d4d', '#ffc93c', '#ff8fb1'] as const,
+
+  // Brand — primary accent (tangerine), used for solid fills/icons
+  primary: '#ff9d4d',
+  primaryDark: '#d67f38',
   primaryDeep: '#4a3520',
-  primaryLight: '#ffc466',
-  primaryGlow: 'rgba(240,168,63,0.3)',
+  primaryLight: '#ffc93c',
+  primaryGlow: 'rgba(255,157,77,0.3)',
 
   // Secondary accent — soft sky blue (calm, learning)
   secondary: '#5FA8D3',
   secondaryDark: '#3D6E8F',
   accent: '#5FA8D3',
 
-  // States
+  // States — error red is reserved for actual errors, never decorative
   success: '#5dcaa5',
   successDark: '#3fa886',
   error: '#e6455a',
   errorDark: '#b8354a',
-  warning: '#f0a83f',
-  gold: '#f0a83f',
+  warning: '#ff9d4d',
+  gold: '#ffc93c',
 
-  // Gradients (pairs)
+  // Gradients (pairs/triples) — all drawn from the coral/tangerine/gold/blush family
   gradientChat: ['#131a30', '#0d1224'] as const,
   gradientCard: ['#2A3550', '#161c33'] as const,
-  gradientBtn: ['#ffc466', '#c9822a'] as const,
-  gradientGold: ['#ffc466', '#c9822a'] as const,
-  gradientHero: ['#f0a83f', '#e6455a'] as const,
+  gradientBtn: ['#ffc93c', '#ff9d4d'] as const,
+  gradientGold: ['#ffc93c', '#ff9d4d'] as const,
+  gradientHero: ['#ff6b7a', '#ff9d4d', '#ffc93c'] as const,
 
   // Bubbles
   userBubble: '#3D6E8F',
@@ -49,7 +59,7 @@ export const Colors = {
 
   // Tabs
   tabBar: '#0d1224',
-  tabBarActive: '#f0a83f',
+  tabBarActive: '#ff9d4d',
   tabBarInactive: '#4A5468',
 
   // Misc

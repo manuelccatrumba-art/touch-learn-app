@@ -14,9 +14,9 @@ export default function TouchLearnLogo({ size = 40, waveColor = '#0d1224' }: Pro
     <Svg width={size} height={size} viewBox="0 0 100 100">
       <Defs>
         <RadialGradient id="touchLearnLogoGrad" cx="35%" cy="30%" r="75%">
-          <Stop offset="0%" stopColor="#ffc466" />
-          <Stop offset="60%" stopColor="#f0a83f" />
-          <Stop offset="100%" stopColor="#e6455a" />
+          <Stop offset="0%" stopColor="#ffc93c" />
+          <Stop offset="55%" stopColor="#ff9d4d" />
+          <Stop offset="100%" stopColor="#ff6b7a" />
         </RadialGradient>
       </Defs>
       <Circle cx="50" cy="50" r="50" fill="url(#touchLearnLogoGrad)" />

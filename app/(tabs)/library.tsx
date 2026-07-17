@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { LayoutChangeEvent, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Reanimated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { SEGMENT_ICONS } from '../../constants/categoryIcons';
 import { CEFRLevel } from '../../types';
@@ -18,19 +19,50 @@ const SEGMENTS: { id: Segment; label: string }[] = [
   { id: 'vocabulary', label: 'Vocabulário' },
   { id: 'culture', label: 'Cultura' },
 ];
+const GAP = 8;
 
 const LEVELS: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 export default function LibraryScreen() {
   const [segment, setSegment] = useState<Segment>('grammar');
   const [level, setLevel] = useState<CEFRLevel | 'all'>('all');
+  const [rowWidth, setRowWidth] = useState(0);
+
+  const activeIndex = SEGMENTS.findIndex((s) => s.id === segment);
+  const pillWidth = rowWidth > 0 ? (rowWidth - GAP * 2) / 3 : 0;
+  const indicatorX = useSharedValue(0);
+
+  useEffect(() => {
+    if (pillWidth > 0) {
+      indicatorX.value = withSpring(activeIndex * (pillWidth + GAP), { damping: 16, stiffness: 160 });
+    }
+  }, [activeIndex, pillWidth]);
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: indicatorX.value }],
+    width: pillWidth,
+  }));
+
+  function onRowLayout(e: LayoutChangeEvent) {
+    setRowWidth(e.nativeEvent.layout.width);
+  }
 
   return (
     <View style={styles.flex}>
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Biblioteca</Text>
-          <View style={styles.pillRow}>
+          <View style={styles.pillRow} onLayout={onRowLayout}>
+            {pillWidth > 0 && (
+              <Reanimated.View style={[styles.pillIndicator, indicatorStyle]}>
+                <LinearGradient
+                  colors={Colors.gradientHero}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.pillIndicatorFill}
+                />
+              </Reanimated.View>
+            )}
             {SEGMENTS.map((s) => {
               const active = s.id === segment;
               const meta = SEGMENT_ICONS[s.id];
@@ -40,22 +72,10 @@ export default function LibraryScreen() {
                   style={({ pressed }) => [styles.pillWrap, pressed && { transform: [{ scale: 0.97 }] }]}
                   onPress={() => setSegment(s.id)}
                 >
-                  {active ? (
-                    <LinearGradient
-                      colors={Colors.gradientHero}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.pill}
-                    >
-                      <IconBadge name={meta.icon} color={Colors.background} size={14} badgeSize={22} shape="circle" />
-                      <Text style={styles.pillTextActive}>{s.label}</Text>
-                    </LinearGradient>
-                  ) : (
-                    <View style={styles.pill}>
-                      <IconBadge name={meta.icon} color={meta.color} size={14} badgeSize={22} shape="circle" />
-                      <Text style={styles.pillText}>{s.label}</Text>
-                    </View>
-                  )}
+                  <View style={[styles.pill, active && styles.pillActive]}>
+                    <IconBadge name={meta.icon} color={active ? Colors.background : meta.color} size={14} badgeSize={22} shape="circle" />
+                    <Text style={active ? styles.pillTextActive : styles.pillText}>{s.label}</Text>
+                  </View>
                 </Pressable>
               );
             })}
@@ -104,7 +124,16 @@ const styles = StyleSheet.create({
   },
   headerTitle: { color: Colors.text, fontSize: 26, fontWeight: '800', marginBottom: 12 },
 
-  pillRow: { flexDirection: 'row', gap: 8 },
+  pillRow: { flexDirection: 'row', gap: GAP, position: 'relative' },
+  pillIndicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  pillIndicatorFill: { flex: 1 },
   pillWrap: { flex: 1 },
   pill: {
     flexDirection: 'row',
@@ -115,6 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 9,
   },
+  pillActive: { backgroundColor: 'transparent' },
   pillText: { color: Colors.textSecondary, fontSize: 13, fontWeight: '700' },
   pillTextActive: { color: Colors.background, fontSize: 13, fontWeight: '800' },
 

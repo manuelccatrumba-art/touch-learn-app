@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { GrammarExercise } from '../types';
 import { Colors } from '../constants/Colors';
+import ParticleBurst from './ParticleBurst';
 
 interface Props {
   exercise: GrammarExercise;
@@ -51,6 +52,7 @@ function lcsMask(a: string[], b: string[]): boolean[] {
 export default function ExerciseCard({ exercise, onComplete }: Props) {
   const [selected, setSelected] = useState<string>('');
   const [submitted, setSubmitted] = useState(false);
+  const [burst, setBurst] = useState(0);
 
   const normalize = (s: string) =>
     s.trim().toLowerCase().replace(/[.?!,]/g, '');
@@ -90,6 +92,7 @@ export default function ExerciseCard({ exercise, onComplete }: Props) {
   const handleSubmit = () => {
     if (!selected.trim()) return;
     setSubmitted(true);
+    if (isCorrect) setBurst((b) => b + 1);
     onComplete(isCorrect);
   };
 
@@ -100,6 +103,7 @@ export default function ExerciseCard({ exercise, onComplete }: Props) {
 
   return (
     <View style={styles.card}>
+      <ParticleBurst trigger={burst} />
       {/* Note badge */}
       <View style={styles.noteBadge}>
         <Text style={styles.noteText}>{exercise.noteId} — {exercise.noteTitle}</Text>
@@ -215,6 +219,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     padding: 22,
     marginHorizontal: 20,
+    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

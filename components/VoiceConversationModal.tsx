@@ -20,6 +20,7 @@ interface Props {
   visible: boolean;
   state: VoiceState;
   caption: string;
+  volume?: number; // 0..1, real mic amplitude while listening
   onClose: () => void;
 }
 
@@ -41,11 +42,16 @@ function formatTimer(seconds: number): string {
   return `${m}:${s}`;
 }
 
-export default function VoiceConversationModal({ visible, state, caption, onClose }: Props) {
+export default function VoiceConversationModal({ visible, state, caption, volume = 0, onClose }: Props) {
   const pulse = useSharedValue(1);
   const ringProgress = useSharedValue(0);
+  const micVolume = useSharedValue(0);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    micVolume.value = withTiming(state === 'listening' ? volume : 0, { duration: 120 });
+  }, [volume, state]);
 
   useEffect(() => {
     if (!visible) {
@@ -88,6 +94,10 @@ export default function VoiceConversationModal({ visible, state, caption, onClos
     transform: [{ scale: interpolate(ringProgress.value, [0, 1], [1, 1.3]) }],
     opacity: interpolate(ringProgress.value, [0, 1], [0.6, 0]),
   }));
+  const haloStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 + micVolume.value * 0.5 }],
+    opacity: 0.5 + micVolume.value * 0.5,
+  }));
 
   const color = STATE_COLOR[state];
 
@@ -103,7 +113,7 @@ export default function VoiceConversationModal({ visible, state, caption, onClos
         </View>
 
         <View style={styles.center}>
-          <View style={styles.halo} />
+          <Animated.View style={[styles.halo, haloStyle]} />
           <Animated.View style={[styles.pulseRing, { borderColor: color + '40' }, ringStyle]} />
           <Animated.View style={[styles.avatarWrapper, orbStyle]}>
             <TouchLearnLogo size={88} />
