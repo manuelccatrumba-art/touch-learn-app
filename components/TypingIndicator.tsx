@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Colors } from '../constants/Colors';
+import TouchLearnLogo from './TouchLearnLogo';
 
 export default function TypingIndicator() {
   const dot1 = useRef(new Animated.Value(0)).current;
@@ -30,10 +31,8 @@ export default function TypingIndicator() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.avatarOuter}>
-        <View style={styles.avatarInner}>
-          <Animated.Text style={styles.avatarText}>TL</Animated.Text>
-        </View>
+      <View style={styles.avatarWrapper}>
+        <TouchLearnLogo size={38} />
       </View>
       <View style={styles.bubble}>
         <Animated.View style={[styles.dot, dotStyle(dot1)]} />
@@ -51,34 +50,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginVertical: 5,
   },
-  avatarOuter: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: Colors.primaryDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  avatarInner: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: Colors.white,
-    fontWeight: '800',
-    fontSize: 11,
-    letterSpacing: 0.5,
-  },
+  avatarWrapper: { marginRight: 8 },
   bubble: {
     flexDirection: 'row',
     backgroundColor: Colors.card,

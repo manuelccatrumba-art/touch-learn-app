@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Message } from '../types';
 import { Colors } from '../constants/Colors';
 import { speakTutor } from '../services/speech';
+import TouchLearnLogo from './TouchLearnLogo';
 
 interface Props {
   message: Message;
@@ -107,11 +108,7 @@ export default function ChatBubble({ message }: Props) {
     >
       {!isUser && (
         <View style={styles.avatarWrapper}>
-          <View style={styles.avatarOuter}>
-            <View style={styles.avatarInner}>
-              <Text style={styles.avatarText}>TL</Text>
-            </View>
-          </View>
+          <TouchLearnLogo size={38} />
           <View style={styles.onlineDot} />
         </View>
       )}
@@ -181,33 +178,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginRight: 8,
     marginBottom: 4,
-  },
-  avatarOuter: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: Colors.primaryDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  avatarInner: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primaryDark,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: Colors.white,
-    fontWeight: '800',
-    fontSize: 11,
-    letterSpacing: 0.5,
   },
   onlineDot: {
     position: 'absolute',

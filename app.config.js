@@ -9,7 +9,7 @@ module.exports = {
     splash: {
       image: './assets/splash.png',
       resizeMode: 'contain',
-      backgroundColor: '#070D1F',
+      backgroundColor: '#0d1224',
     },
     assetBundlePatterns: ['**/*'],
     ios: {
@@ -18,10 +18,10 @@ module.exports = {
     },
     android: {
       package: 'com.touchlearn.app',
-      versionCode: 22,
+      versionCode: 23,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#070D1F',
+        backgroundColor: '#0d1224',
       },
       permissions: ['RECORD_AUDIO'],
     },
