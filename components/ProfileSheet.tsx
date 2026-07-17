@@ -15,6 +15,8 @@ import * as Application from 'expo-application';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
 import { getProgress, resetAllData } from '../services/storage';
+import { getCompletedNodes } from '../services/pathProgress';
+import { GRAMMAR_NOTES } from '../constants/grammarExercises';
 import {
   AVATAR_COLORS,
   AVATAR_EMOJIS,
@@ -23,7 +25,22 @@ import {
   updateProfile,
   UserProfile,
 } from '../services/profile';
-import { UserProgress } from '../types';
+import { CEFRLevel, UserProgress } from '../types';
+
+const CEFR_ORDER: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+// Nível CEFR estimado: o mais alto entre as notas de gramática já concluídas.
+function estimateCEFRLevel(completedNoteIds: string[]): CEFRLevel | null {
+  const levels = completedNoteIds
+    .map((id) => GRAMMAR_NOTES.find((n) => n.id === id)?.level)
+    .filter((l): l is CEFRLevel => !!l);
+  if (levels.length === 0) return null;
+  let best: CEFRLevel = 'A1';
+  for (const lvl of CEFR_ORDER) {
+    if (levels.includes(lvl)) best = lvl;
+  }
+  return best;
+}
 
 interface Props {
   visible: boolean;
@@ -35,6 +52,7 @@ export default function ProfileSheet({ visible, onClose }: Props) {
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [nameDraft, setNameDraft] = useState('');
   const [savedPulse, setSavedPulse] = useState(false);
+  const [cefrLevel, setCefrLevel] = useState<CEFRLevel | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -43,6 +61,7 @@ export default function ProfileSheet({ visible, onClose }: Props) {
         setProfile(p);
         setNameDraft(p.displayName);
       });
+      getCompletedNodes().then((completed) => setCefrLevel(estimateCEFRLevel(completed)));
       getProgress().then(setProgress);
     }, [visible]),
   );
@@ -82,6 +101,12 @@ export default function ProfileSheet({ visible, onClose }: Props) {
                 <View style={styles.levelPill}>
                   <Text style={styles.levelPillText}>NÍVEL {progress.level} · {progress.xp} XP</Text>
                 </View>
+                {cefrLevel && (
+                  <View style={styles.cefrPill}>
+                    <Ionicons name="checkmark-circle" size={11} color={Colors.success} />
+                    <Text style={styles.cefrPillText}>Nível {cefrLevel} · CEFR</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.card}>
@@ -221,6 +246,8 @@ const styles = StyleSheet.create({
   avatarPreviewName: { color: Colors.text, fontSize: 16, fontWeight: '700' },
   levelPill: { marginTop: 6, backgroundColor: Colors.primaryDeep, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   levelPillText: { color: Colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 0.5 },
+  cefrPill: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6 },
+  cefrPillText: { color: Colors.success, fontSize: 10, fontWeight: '700' },
 
   card: { backgroundColor: Colors.card, borderRadius: 16, padding: 14 },
   cardLabel: { color: Colors.text, fontWeight: '700', fontSize: 13, marginBottom: 10 },

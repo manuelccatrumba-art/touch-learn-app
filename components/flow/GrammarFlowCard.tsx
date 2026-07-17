@@ -54,8 +54,17 @@ export default function GrammarFlowCard({ noteId, resolved, onResolved }: Props)
       <TouchableOpacity style={styles.card} onPress={() => setStarted(true)} activeOpacity={0.85}>
         <IconBadge name="help-circle" color={Colors.error} size={18} badgeSize={36} />
         <View style={styles.info}>
-          <Text style={styles.title}>{note.title}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>{note.title}</Text>
+            <View style={styles.levelPill}>
+              <Text style={styles.levelPillText}>{note.level}</Text>
+            </View>
+          </View>
           <Text style={styles.desc} numberOfLines={1}>{note.description}</Text>
+          <View style={styles.cefrTag}>
+            <Ionicons name="checkmark-circle" size={11} color={Colors.success} />
+            <Text style={styles.cefrTagText}>Estruturado segundo o CEFR</Text>
+          </View>
         </View>
         <View style={styles.ctaBtn}>
           <Text style={styles.ctaText}>Continuar</Text>
@@ -99,8 +108,13 @@ const styles = StyleSheet.create({
   cardDone: { opacity: 0.6, gap: 8 },
   doneText: { color: Colors.textSecondary, fontSize: 13, fontWeight: '600' },
   info: { flex: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   title: { color: Colors.text, fontSize: 14, fontWeight: '700' },
+  levelPill: { backgroundColor: Colors.secondary + '22', borderRadius: 6, paddingHorizontal: 5, paddingVertical: 1 },
+  levelPillText: { color: Colors.secondary, fontSize: 9, fontWeight: '800' },
   desc: { color: Colors.textSecondary, fontSize: 11, marginTop: 2 },
+  cefrTag: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 4 },
+  cefrTagText: { color: Colors.success, fontSize: 9, fontWeight: '700' },
   ctaBtn: {
     flexDirection: 'row',
     alignItems: 'center',
