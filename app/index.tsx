@@ -42,6 +42,7 @@ import ProfileSheet from '../components/ProfileSheet';
 import VoiceConversationModal, { VoiceState } from '../components/VoiceConversationModal';
 import { useVoiceInput } from '../hooks/useVoiceInput';
 import { speakTutor, stopSpeaking } from '../services/speech';
+import QuickCommandButton, { QuickCommandKind } from '../components/QuickCommandButton';
 import GrammarFlowCard from '../components/flow/GrammarFlowCard';
 import VocabReviewFlowCard from '../components/flow/VocabReviewFlowCard';
 import DailyPhraseFlowCard from '../components/flow/DailyPhraseFlowCard';
@@ -255,6 +256,18 @@ export default function FlowScreen() {
     }
   }
 
+  async function triggerQuickCommand(kind: QuickCommandKind) {
+    const label = kind === 'grammar' ? 'Gramática' : kind === 'vocab' ? 'Vocabulário' : 'Cultura';
+    await pushItems([{
+      id: makeId(),
+      type: 'user_message',
+      timestamp: Date.now(),
+      message: { id: makeId(), role: 'user', content: label, timestamp: Date.now() },
+    }]);
+    await handleCommand({ kind: kind === 'vocab' ? 'vocab' : kind === 'grammar' ? 'grammar' : 'culture' });
+    listRef.current?.scrollToEnd({ animated: true });
+  }
+
   async function sendMessage(text: string, viaVoice = false) {
     const trimmed = text.trim();
     if (!trimmed || isStreaming) return;
@@ -401,6 +414,7 @@ export default function FlowScreen() {
         />
 
         <View style={styles.inputBar}>
+          <QuickCommandButton onCommand={(kind: QuickCommandKind) => triggerQuickCommand(kind)} />
           <View style={styles.inputWrapper}>
             <TextInput
               style={styles.input}
