@@ -17,7 +17,7 @@ export default function RootLayout() {
       <ErrorBoundary>
         <StatusBar style="light" backgroundColor="#0d1224" />
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="index" />
         </Stack>
       </ErrorBoundary>
     </GestureHandlerRootView>
