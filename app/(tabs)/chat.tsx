@@ -417,12 +417,12 @@ export default function ChatScreen() {
           >
             <Reanimated.View style={[styles.micPulseRing, micPulseStyle]} />
             <LinearGradient
-              colors={listening ? [Colors.coral, Colors.tangerine] : Colors.gradientHero}
+              colors={listening ? [Colors.coral, Colors.orange] : Colors.gradientTutor}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.micBtn}
             >
-              <Ionicons name={listening ? 'mic' : 'mic-outline'} size={18} color={Colors.background} />
+              <Ionicons name={listening ? 'mic' : 'mic-outline'} size={18} color={Colors.white} />
             </LinearGradient>
           </Pressable>
           <TouchableOpacity

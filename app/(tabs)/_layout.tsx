@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Platform, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/Colors';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -20,10 +21,48 @@ function TabIcon({ name, color, focused }: { name: IconName; color: string; focu
       )}
       <Ionicons
         name={focused ? name : (`${name}-outline` as IconName)}
-        size={24}
+        size={22}
         color={color}
       />
     </View>
+  );
+}
+
+// Botão central elevado do Tutor — gradiente azul→roxo, acima da tab bar.
+function TutorTabButton({ onPress, accessibilityState }: any) {
+  const focused = accessibilityState?.selected;
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.85}
+      style={{
+        top: -18,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <LinearGradient
+        colors={Colors.gradientTutor}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          width: 58,
+          height: 58,
+          borderRadius: 29,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 4,
+          borderColor: Colors.background,
+          shadowColor: Colors.primary,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.5,
+          shadowRadius: 10,
+          elevation: 8,
+        }}
+      >
+        <Ionicons name={focused ? 'chatbubbles' : 'chatbubbles-outline'} size={26} color={Colors.white} />
+      </LinearGradient>
+    </TouchableOpacity>
   );
 }
 
@@ -60,20 +99,27 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="licoes"
         options={{
-          title: 'Tutor',
+          title: 'Lições',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="chatbubbles" color={color} focused={focused} />
+            <TabIcon name="book" color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
-        name="library"
+        name="chat"
         options={{
-          title: 'Biblioteca',
+          title: '',
+          tabBarButton: (props) => <TutorTabButton {...props} />,
+        }}
+      />
+      <Tabs.Screen
+        name="desafios"
+        options={{
+          title: 'Desafios',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="library" color={color} focused={focused} />
+            <TabIcon name="trophy" color={color} focused={focused} />
           ),
         }}
       />
@@ -87,11 +133,11 @@ export default function TabLayout() {
         }}
       />
 
-      {/* Ainda navegáveis (deep-links a partir da Trilha/Biblioteca), mas
-          escondidos da tab bar para reduzir a fragmentação de 7 para 4 abas. */}
+      {/* Continuam navegáveis via deep-link, mas escondidas da tab bar. */}
       <Tabs.Screen name="grammar" options={{ href: null }} />
       <Tabs.Screen name="vocabulary" options={{ href: null }} />
       <Tabs.Screen name="culture" options={{ href: null }} />
+      <Tabs.Screen name="library" options={{ href: null }} />
     </Tabs>
   );
 }
