@@ -28,11 +28,6 @@ export const Colors = {
   gold: '#ffc93c',
   spectrum: ['#3b7dff', '#8b5cf6', '#1ec9a4', '#ff9d4d', '#ff6b6b', '#ffc93c'] as const,
 
-  // Secondary accent (kept for compatibility with older screens)
-  secondary: '#8b5cf6',
-  secondaryDark: '#6d3fd1',
-  accent: '#1ec9a4',
-
   // States
   success: '#1ec9a4',
   successDark: '#17a082',

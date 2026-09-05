@@ -59,7 +59,7 @@ function TutorOrb() {
   return (
     <Reanimated.View style={[orbStyles.wrapper, animatedStyle]}>
       <LinearGradient
-        colors={['#ffc93c', '#ff9d4d', '#ff6b7a']}
+        colors={[Colors.gold, Colors.orange, Colors.coral]}
         locations={[0, 0.55, 1]}
         start={{ x: 0.15, y: 0.1 }}
         end={{ x: 0.9, y: 1 }}

@@ -1,4 +1,5 @@
 import { CEFRLevel } from '../types';
+import { Colors } from './Colors';
 
 export type CultureType = 'idiom' | 'slang' | 'movie' | 'music' | 'pronunciation' | 'usage';
 
@@ -12,13 +13,15 @@ export interface CultureNugget {
   explanation: string;
 }
 
+// Cores ligadas aos tokens atuais de Colors.ts — antes eram hex soltos de uma
+// paleta antiga (ink navy + dourado), independentes do resto da app.
 export const CULTURE_TYPE_LABELS: Record<CultureType, { title: string; emoji: string; color: string }> = {
-  idiom: { title: 'Expressões Idiomáticas', emoji: '💡', color: '#E8A94C' },
-  slang: { title: 'Gírias Modernas', emoji: '🔥', color: '#EC4899' },
-  movie: { title: 'Frases de Filmes', emoji: '🎬', color: '#5FA8D3' },
-  music: { title: 'Música', emoji: '🎵', color: '#6FCF97' },
-  pronunciation: { title: 'Pronúncia', emoji: '👄', color: '#F87171' },
-  usage: { title: 'Americano vs Britânico', emoji: '🌎', color: '#A78BFA' },
+  idiom: { title: 'Expressões Idiomáticas', emoji: '💡', color: Colors.gold },
+  slang: { title: 'Gírias Modernas', emoji: '🔥', color: Colors.coral },
+  movie: { title: 'Frases de Filmes', emoji: '🎬', color: Colors.primary },
+  music: { title: 'Música', emoji: '🎵', color: Colors.teal },
+  pronunciation: { title: 'Pronúncia', emoji: '👄', color: Colors.orange },
+  usage: { title: 'Americano vs Britânico', emoji: '🌎', color: Colors.purple },
 };
 
 export const CULTURE_NUGGETS: CultureNugget[] = [

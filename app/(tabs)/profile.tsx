@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   SafeAreaView,
   ScrollView,
@@ -42,7 +43,13 @@ export default function ProfileScreen() {
     }, []),
   );
 
-  if (!profile || !progress) return null;
+  if (!profile || !progress) {
+    return (
+      <SafeAreaView style={[styles.safe, styles.center]}>
+        <ActivityIndicator color={Colors.primary} size="large" />
+      </SafeAreaView>
+    );
+  }
 
   async function persist(partial: Partial<UserProfile>) {
     const updated = await updateProfile(partial);
@@ -211,6 +218,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
+  center: { alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20, paddingTop: 60, paddingBottom: 40, gap: 16 },
 
   header: { marginBottom: 4 },

@@ -9,6 +9,7 @@ import {
 import { GrammarExercise } from '../types';
 import { Colors } from '../constants/Colors';
 import ParticleBurst from './ParticleBurst';
+import { hapticSuccess, hapticError } from '../utils/haptics';
 
 interface Props {
   exercise: GrammarExercise;
@@ -92,7 +93,12 @@ export default function ExerciseCard({ exercise, onComplete }: Props) {
   const handleSubmit = () => {
     if (!selected.trim()) return;
     setSubmitted(true);
-    if (isCorrect) setBurst((b) => b + 1);
+    if (isCorrect) {
+      setBurst((b) => b + 1);
+      hapticSuccess();
+    } else {
+      hapticError();
+    }
     onComplete(isCorrect);
   };
 

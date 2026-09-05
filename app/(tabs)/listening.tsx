@@ -16,6 +16,7 @@ import { FlashCard } from '../../types';
 import { getFlashcards, addXP, incrementProgress } from '../../services/storage';
 import { speakEnglish, stopSpeaking } from '../../services/speech';
 import { isCloseMatch } from '../../utils/textMatch';
+import { hapticSuccess, hapticError } from '../../utils/haptics';
 
 const SESSION_SIZE = 10;
 const XP_CORRECT = 8;
@@ -84,6 +85,7 @@ export default function ListeningScreen() {
     const isRight = isCloseMatch(answer, card.english);
     setChecked(true);
     setCorrect(isRight);
+    if (isRight) hapticSuccess(); else hapticError();
     setSessionResults((r) => ({ correct: r.correct + (isRight ? 1 : 0), total: r.total + 1 }));
     await addXP(isRight ? XP_CORRECT : XP_ATTEMPT);
     await incrementProgress({ exercisesCompleted: 1, exercisesCorrect: isRight ? 1 : 0 });

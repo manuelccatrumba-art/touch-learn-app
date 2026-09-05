@@ -52,7 +52,6 @@ const MOTIVATIONAL_QUOTES = [
 ];
 
 type PathNodeState = PathNode & { __done: boolean; __current: boolean };
-type LearningModuleState = { id: string; title: string; icon: string; nodes: PathNodeState[] };
 
 function greeting(): string {
   const h = new Date().getHours();

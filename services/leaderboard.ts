@@ -1,5 +1,6 @@
 import { getProfile } from './profile';
 import { getProgress } from './storage';
+import { Colors } from '../constants/Colors';
 
 export interface LeaderboardEntry {
   id: string;
@@ -21,11 +22,11 @@ export interface LeaderboardEntry {
 //    para sempre depois do utilizador real os ultrapassar uma vez.
 // Substituir por dados reais assim que existir backend com mais utilizadores.
 const MOCK_COMPETITOR_BASE = [
-  { id: 'm1', name: 'Beatriz M.', avatarEmoji: '🦊', avatarColor: '#ff6b6b', baseXp: 120 },
-  { id: 'm2', name: 'Carlos S.', avatarEmoji: '🐯', avatarColor: '#ffc93c', baseXp: 95 },
-  { id: 'm3', name: 'Ana P.', avatarEmoji: '🐼', avatarColor: '#1ec9a4', baseXp: 70 },
-  { id: 'm4', name: 'Rui F.', avatarEmoji: '🐶', avatarColor: '#8b5cf6', baseXp: 45 },
-  { id: 'm5', name: 'Marta L.', avatarEmoji: '🐨', avatarColor: '#3b7dff', baseXp: 20 },
+  { id: 'm1', name: 'Beatriz M.', avatarEmoji: '🦊', avatarColor: Colors.coral, baseXp: 120 },
+  { id: 'm2', name: 'Carlos S.', avatarEmoji: '🐯', avatarColor: Colors.gold, baseXp: 95 },
+  { id: 'm3', name: 'Ana P.', avatarEmoji: '🐼', avatarColor: Colors.teal, baseXp: 70 },
+  { id: 'm4', name: 'Rui F.', avatarEmoji: '🐶', avatarColor: Colors.purple, baseXp: 45 },
+  { id: 'm5', name: 'Marta L.', avatarEmoji: '🐨', avatarColor: Colors.primary, baseXp: 20 },
 ];
 
 function weekStartOf(d: Date): string {
@@ -82,7 +83,7 @@ export async function getWeeklyLeaderboard(): Promise<LeaderboardEntry[]> {
     id: 'me',
     name: profile.displayName || 'Tu',
     avatarEmoji: profile.avatarEmoji || '🎯',
-    avatarColor: profile.avatarColor || '#3b7dff',
+    avatarColor: profile.avatarColor || Colors.primary,
     xp: myWeeklyXp,
     isCurrentUser: true,
   };

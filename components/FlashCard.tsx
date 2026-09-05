@@ -23,6 +23,7 @@ import { Colors } from '../constants/Colors';
 import { CATEGORY_LABELS } from '../constants/bookContent';
 import { speakEnglish } from '../services/speech';
 import ParticleBurst from './ParticleBurst';
+import { hapticSelect, hapticTap } from '../utils/haptics';
 
 interface Props {
   card: FlashCardType;
@@ -40,6 +41,7 @@ export default function FlashCard({ card, onGrade }: Props) {
   const category = CATEGORY_LABELS[card.category];
 
   const flip = () => {
+    hapticTap();
     Animated.spring(flipAnim, {
       toValue: flipped ? 0 : 1,
       useNativeDriver: true,
@@ -50,6 +52,7 @@ export default function FlashCard({ card, onGrade }: Props) {
   };
 
   function grade(quality: 0 | 1 | 2 | 3 | 4 | 5) {
+    hapticSelect();
     translateX.value = 0;
     setFlipped(false);
     flipAnim.setValue(0);

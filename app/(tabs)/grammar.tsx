@@ -323,10 +323,10 @@ const styles = StyleSheet.create({
   noteDesc: { color: Colors.textSecondary, fontSize: 12, marginTop: 2, lineHeight: 16 },
   noteRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   levelBadge: {
-    color: Colors.secondary,
+    color: Colors.purple,
     fontSize: 10,
     fontWeight: '800',
-    backgroundColor: Colors.secondary + '22',
+    backgroundColor: Colors.purple + '22',
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 8,

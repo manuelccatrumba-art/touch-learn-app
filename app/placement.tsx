@@ -10,6 +10,7 @@ import { CATEGORY_LABELS } from '../constants/bookContent';
 import { FlashCardCategory } from '../types';
 import { markNodeComplete } from '../services/pathProgress';
 import { updateProfile } from '../services/profile';
+import { hapticSuccess, hapticError } from '../utils/haptics';
 
 type Screen = 'intro' | 'quiz' | 'result';
 
@@ -86,6 +87,7 @@ export default function PlacementScreen() {
     if (selected) return;
     setSelected(option);
     const isRight = option === q.correctAnswer;
+    if (isRight) hapticSuccess(); else hapticError();
     setTimeout(() => {
       if (isRight) setCorrectCount((c) => c + 1);
       if (index + 1 < PLACEMENT_QUESTIONS.length) {

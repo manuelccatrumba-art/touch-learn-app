@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors } from '../constants/Colors';
 
 const KEY = '@et:profile';
 
@@ -16,9 +17,12 @@ export const AVATAR_EMOJIS = [
   '🚀', '⭐', '🔥', '🎯', '🌟', '🎓',
 ];
 
+// Ligadas aos tokens atuais de Colors.ts — antes eram hex soltos de uma
+// paleta antiga (ink navy + dourado), por isso escolher uma cor de avatar
+// não combinava em nada com a identidade visual atual da app.
 export const AVATAR_COLORS = [
-  '#E8A94C', '#5FA8D3', '#6FCF97', '#E5484D',
-  '#B98CE0', '#F0C480', '#3D6E8F', '#C68A32',
+  Colors.primary, Colors.purple, Colors.teal, Colors.orange,
+  Colors.coral, Colors.gold, Colors.primaryLight, Colors.tealDark,
 ];
 
 export const GOALS = [
@@ -33,7 +37,7 @@ export const GOALS = [
 const DEFAULT_PROFILE: UserProfile = {
   displayName: '',
   avatarEmoji: '🦁',
-  avatarColor: '#E8A94C',
+  avatarColor: Colors.primary,
   goal: '',
   placementDone: false,
 };

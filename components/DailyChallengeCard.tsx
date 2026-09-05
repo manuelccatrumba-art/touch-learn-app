@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { Colors } from '../constants/Colors';
 import { getTodayNugget, getDailyChallengeState, answerDailyChallenge, DAILY_CHALLENGE_XP } from '../services/dailyChallenge';
+import { hapticSuccess, hapticError } from '../utils/haptics';
 import ParticleBurst from './ParticleBurst';
 
 type Variant = 'compact' | 'hero';
@@ -50,7 +51,14 @@ export default function DailyChallengeCard({ variant, onAnswered }: Props) {
     const result = await answerDailyChallenge(answer);
     setChecked(true);
     setCorrect(result.correct);
-    if (result.correct && !result.alreadyAnswered) setBurst((b) => b + 1);
+    if (!result.alreadyAnswered) {
+      if (result.correct) {
+        setBurst((b) => b + 1);
+        hapticSuccess();
+      } else {
+        hapticError();
+      }
+    }
     onAnswered?.(result.correct);
   }
 

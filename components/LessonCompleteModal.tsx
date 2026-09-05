@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../constants/Colors';
+import { hapticSuccess } from '../utils/haptics';
 
 interface Props {
   visible: boolean;
@@ -10,6 +11,10 @@ interface Props {
 }
 
 export default function LessonCompleteModal({ visible, xp, nextNode, onContinue }: Props) {
+  useEffect(() => {
+    if (visible) hapticSuccess();
+  }, [visible]);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
