@@ -138,6 +138,7 @@ export default function TabLayout() {
       <Tabs.Screen name="vocabulary" options={{ href: null }} />
       <Tabs.Screen name="culture" options={{ href: null }} />
       <Tabs.Screen name="library" options={{ href: null }} />
+      <Tabs.Screen name="listening" options={{ href: null }} />
     </Tabs>
   );
 }

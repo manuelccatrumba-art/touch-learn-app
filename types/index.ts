@@ -80,6 +80,8 @@ export interface UserProgress {
   achievements: string[];
   xp: number;
   level: number;
+  weeklyXp: number; // XP ganho desde o início da semana atual (reinicia às segundas)
+  weekStartDate: string; // YYYY-MM-DD da segunda-feira da semana em curso
 }
 
 export interface SpacedRepetitionGrade {

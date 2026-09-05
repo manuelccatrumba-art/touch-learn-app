@@ -6,7 +6,6 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
-  TextInput,
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,38 +20,21 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';
 import { LEARNING_PATH, LEARNING_MODULES, LearningModule, PathNode } from '../../constants/path';
-import { GRAMMAR_NOTES } from '../../constants/grammarExercises';
 import { getCompletedNodes } from '../../services/pathProgress';
-import { getProgress, getFlashcards, addXP } from '../../services/storage';
+import { getProgress, getFlashcards } from '../../services/storage';
 import { getDueCount } from '../../utils/spacedRepetition';
 import { getProfile, UserProfile } from '../../services/profile';
 import { getWeeklyLeaderboard, LeaderboardEntry } from '../../services/leaderboard';
-import { CULTURE_NUGGETS } from '../../constants/culture';
-import { CEFRLevel, UserProgress } from '../../types';
+import { CEFR_TITLE, estimateCEFRLevel } from '../../utils/cefr';
+import { UserProgress } from '../../types';
 import { useAnimatedNumber } from '../../components/AnimatedNumber';
 import HeroIllustration from '../../components/HeroIllustration';
-import ParticleBurst from '../../components/ParticleBurst';
+import DailyChallengeCard from '../../components/DailyChallengeCard';
 
 function dayOfYear(): number {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   return Math.floor((now.getTime() - start.getTime()) / 86400000);
-}
-
-const CEFR_ORDER: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-const CEFR_TITLE: Record<CEFRLevel, string> = {
-  A1: 'Iniciante', A2: 'Elementar', B1: 'Intermédio', B2: 'Intermédio-Alto', C1: 'Avançado', C2: 'Proficiente',
-};
-
-function estimateCEFRLevel(completedNoteIds: string[]): CEFRLevel {
-  const levels = completedNoteIds
-    .map((id) => GRAMMAR_NOTES.find((n) => n.id === id)?.level)
-    .filter((l): l is CEFRLevel => !!l);
-  let best: CEFRLevel = 'A1';
-  for (const lvl of CEFR_ORDER) {
-    if (levels.includes(lvl)) best = lvl;
-  }
-  return best;
 }
 
 const MODULE_GRADIENTS: readonly (readonly [string, string])[] = [
@@ -69,10 +51,6 @@ const MOTIVATIONAL_QUOTES = [
   '"Não pares agora — estás mais perto do que pensas."',
 ];
 
-function normalizeAnswer(s: string) {
-  return s.trim().toLowerCase().replace(/[.?!,]/g, '');
-}
-
 type PathNodeState = PathNode & { __done: boolean; __current: boolean };
 type LearningModuleState = { id: string; title: string; icon: string; nodes: PathNodeState[] };
 
@@ -88,7 +66,7 @@ const CATEGORIES: { id: string; label: string; icon: React.ComponentProps<typeof
   { id: 'conversation', label: 'Conversação', icon: 'chatbubbles', color: Colors.primary, route: '/chat' },
   { id: 'grammar', label: 'Gramática', icon: 'help-circle', color: Colors.purple, route: '/grammar' },
   { id: 'pronunciation', label: 'Pronúncia', icon: 'mic', color: Colors.teal, route: '/culture' },
-  { id: 'listening', label: 'Listening', icon: 'headset', color: Colors.coral, comingSoon: true },
+  { id: 'listening', label: 'Listening', icon: 'headset', color: Colors.coral, route: '/listening' },
 ];
 
 export default function TrailScreen() {
@@ -100,11 +78,6 @@ export default function TrailScreen() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [quoteIdx] = useState(() => dayOfYear() % MOTIVATIONAL_QUOTES.length);
-
-  const [answer, setAnswer] = useState('');
-  const [checked, setChecked] = useState(false);
-  const [correct, setCorrect] = useState(false);
-  const [burst, setBurst] = useState(0);
 
   const heroScale = useSharedValue(1);
   const heroAnimatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: heroScale.value }] }));
@@ -189,27 +162,8 @@ export default function TrailScreen() {
   );
 
   const streak = progress?.currentStreak ?? 0;
-  const dailyNugget = CULTURE_NUGGETS[dayOfYear() % CULTURE_NUGGETS.length];
   const animatedXP = useAnimatedNumber({ value: progress?.xp ?? 0 });
   const notificationCount = dueCount > 0 ? Math.min(dueCount, 9) : 0;
-
-  function checkChallenge() {
-    const isRight =
-      normalizeAnswer(answer) === normalizeAnswer(dailyNugget.phrase) ||
-      normalizeAnswer(dailyNugget.phrase).includes(normalizeAnswer(answer)) && answer.trim().length > 3;
-    setChecked(true);
-    setCorrect(isRight);
-    if (isRight) {
-      addXP(10);
-      setBurst((b) => b + 1);
-    }
-  }
-
-  function resetChallenge() {
-    setAnswer('');
-    setChecked(false);
-    setCorrect(false);
-  }
 
   const myRank = leaderboard.findIndex((e) => e.isCurrentUser) + 1;
 
@@ -356,37 +310,7 @@ export default function TrailScreen() {
 
         {/* Desafio diário + Ranking */}
         <View style={styles.bottomRow}>
-          <View style={styles.challengeCard}>
-            <ParticleBurst trigger={burst} />
-            <View style={styles.challengeHeader}>
-              <Text style={styles.cardTitle}>Desafio diário</Text>
-              <Text style={styles.giftIcon}>🎁</Text>
-            </View>
-            <Text style={styles.challengePrompt} numberOfLines={2}>{dailyNugget.translation}</Text>
-            {!checked ? (
-              <>
-                <TextInput
-                  style={styles.challengeInput}
-                  value={answer}
-                  onChangeText={setAnswer}
-                  placeholder="Traduz para inglês..."
-                  placeholderTextColor={Colors.textMuted}
-                />
-                <TouchableOpacity style={styles.challengeBtn} onPress={checkChallenge} disabled={!answer.trim()}>
-                  <Text style={styles.challengeBtnText}>Verificar</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <View>
-                <Text style={[styles.challengeResult, { color: correct ? Colors.success : Colors.coral }]}>
-                  {correct ? '✓ Certo! +10 XP' : `✗ Era: "${dailyNugget.phrase}"`}
-                </Text>
-                <TouchableOpacity style={styles.challengeBtn} onPress={resetChallenge}>
-                  <Text style={styles.challengeBtnText}>Tentar outra vez</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+          <DailyChallengeCard variant="compact" onAnswered={() => loadAll()} />
 
           <View style={styles.rankCard}>
             <Text style={styles.cardTitle}>Ranking semanal</Text>
@@ -495,18 +419,6 @@ const styles = StyleSheet.create({
 
   bottomRow: { flexDirection: 'row', gap: 12, marginTop: 28 },
   cardTitle: { color: Colors.text, fontSize: 13, fontWeight: '700' },
-
-  challengeCard: { flex: 1, backgroundColor: Colors.card, borderRadius: 18, padding: 14, position: 'relative' },
-  challengeHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  giftIcon: { fontSize: 16 },
-  challengePrompt: { color: Colors.textSecondary, fontSize: 12, marginBottom: 10, minHeight: 32 },
-  challengeInput: {
-    backgroundColor: Colors.surface, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8,
-    color: Colors.text, fontSize: 12, marginBottom: 8,
-  },
-  challengeBtn: { backgroundColor: Colors.primary, borderRadius: 10, paddingVertical: 9, alignItems: 'center' },
-  challengeBtnText: { color: Colors.white, fontWeight: '700', fontSize: 12 },
-  challengeResult: { fontSize: 11, fontWeight: '700', marginBottom: 8 },
 
   rankCard: { flex: 1, backgroundColor: Colors.card, borderRadius: 18, padding: 14 },
   rankRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, borderRadius: 10, padding: 4 },

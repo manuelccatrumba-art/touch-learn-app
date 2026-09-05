@@ -7,6 +7,7 @@ export interface UserProfile {
   avatarEmoji: string;
   avatarColor: string;
   goal: string;
+  placementDone: boolean;
 }
 
 export const AVATAR_EMOJIS = [
@@ -34,6 +35,7 @@ const DEFAULT_PROFILE: UserProfile = {
   avatarEmoji: '🦁',
   avatarColor: '#E8A94C',
   goal: '',
+  placementDone: false,
 };
 
 export async function getProfile(): Promise<UserProfile> {

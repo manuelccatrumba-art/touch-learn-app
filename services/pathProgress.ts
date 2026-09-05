@@ -15,3 +15,7 @@ export async function markNodeComplete(nodeId: string): Promise<string[]> {
   }
   return completed;
 }
+
+export async function resetPathProgress(): Promise<void> {
+  await AsyncStorage.removeItem(KEY);
+}

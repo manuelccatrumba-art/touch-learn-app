@@ -81,6 +81,16 @@ export async function getDueFlashcards(limit = 20): Promise<FlashCard[]> {
 
 // ── Progress ───────────────────────────────────────────────────────────────────
 
+// Segunda-feira (YYYY-MM-DD) da semana que contém `d` — usado para saber
+// quando reiniciar o XP semanal do ranking (services/leaderboard.ts).
+function weekStartOf(d: Date): string {
+  const date = new Date(d);
+  const day = date.getDay(); // 0 = domingo
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  date.setDate(date.getDate() + diffToMonday);
+  return date.toISOString().split('T')[0];
+}
+
 const DEFAULT_PROGRESS: UserProgress = {
   totalMessages: 0,
   exercisesCompleted: 0,
@@ -94,6 +104,8 @@ const DEFAULT_PROGRESS: UserProgress = {
   achievements: [],
   xp: 0,
   level: 1,
+  weeklyXp: 0,
+  weekStartDate: weekStartOf(new Date()),
 };
 
 export async function getProgress(): Promise<UserProgress> {
@@ -114,7 +126,22 @@ export async function incrementProgress(delta: Partial<Record<IncrementableField
 
 export async function updateProgress(partial: Partial<UserProgress>): Promise<UserProgress> {
   const current = await getProgress();
+  const thisWeekStart = weekStartOf(new Date());
+  const isNewWeek = current.weekStartDate !== thisWeekStart;
+
   const updated = { ...current, ...partial };
+
+  // Reinicia os contadores "desta semana" quando a semana civil muda —
+  // antes, weeklyActivity acumulava para sempre por dia-da-semana (nunca
+  // esvaziava) e weeklyXp nem existia, por isso "Esta semana" em Lições e o
+  // "Ranking semanal" em Desafios mostravam totais acumulados desde sempre,
+  // não a semana atual.
+  if (isNewWeek) {
+    updated.weeklyActivity = [0, 0, 0, 0, 0, 0, 0];
+    const weeklyXpDelta = (partial.weeklyXp ?? current.weeklyXp) - current.weeklyXp;
+    updated.weeklyXp = Math.max(0, weeklyXpDelta);
+    updated.weekStartDate = thisWeekStart;
+  }
 
   // Update streak
   const today = new Date().toISOString().split('T')[0];
@@ -147,7 +174,7 @@ export async function updateProgress(partial: Partial<UserProgress>): Promise<Us
 
 export async function addXP(amount: number): Promise<UserProgress> {
   const current = await getProgress();
-  return updateProgress({ xp: current.xp + amount });
+  return updateProgress({ xp: current.xp + amount, weeklyXp: current.weeklyXp + amount });
 }
 
 function checkAchievements(progress: UserProgress): string[] {

@@ -14,6 +14,8 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Application from 'expo-application';
 import { Colors } from '../../constants/Colors';
 import { getProgress, resetAllData } from '../../services/storage';
+import { resetPathProgress } from '../../services/pathProgress';
+import { resetDailyChallenge } from '../../services/dailyChallenge';
 import {
   AVATAR_COLORS,
   AVATAR_EMOJIS,
@@ -178,14 +180,14 @@ export default function ProfileScreen() {
           onPress={() => {
             Alert.alert(
               'Redefinir progresso',
-              'Isto apaga todo o teu progresso, XP e conquistas. O perfil (nome/avatar) mantém-se. Continuar?',
+              'Isto apaga todo o teu progresso, XP, conquistas, lições da Trilha e o desafio diário. O perfil (nome/avatar) mantém-se. Continuar?',
               [
                 { text: 'Cancelar', style: 'cancel' },
                 {
                   text: 'Redefinir',
                   style: 'destructive',
                   onPress: async () => {
-                    await resetAllData();
+                    await Promise.all([resetAllData(), resetPathProgress(), resetDailyChallenge()]);
                     const fresh = await getProgress();
                     setProgress(fresh);
                   },
