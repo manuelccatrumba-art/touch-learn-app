@@ -5,11 +5,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import Text from '../../components/AppText';
+import TextInput from '../../components/AppTextInput';
 import { useFocusEffect } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Application from 'expo-application';

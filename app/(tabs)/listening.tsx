@@ -4,11 +4,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import Text from '../../components/AppText';
+import TextInput from '../../components/AppTextInput';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';

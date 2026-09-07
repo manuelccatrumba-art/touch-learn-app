@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import Text from './AppText';
+import TextInput from './AppTextInput';
 import { GrammarExercise } from '../types';
 import { Colors } from '../constants/Colors';
 import ParticleBurst from './ParticleBurst';

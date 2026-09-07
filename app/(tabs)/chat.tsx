@@ -8,11 +8,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import Text from '../../components/AppText';
+import TextInput from '../../components/AppTextInput';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
