@@ -5,15 +5,18 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import Text from '../../components/AppText';
 import { useFocusEffect } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Application from 'expo-application';
 import { Colors } from '../../constants/Colors';
+import { FONT_SCALE_LABELS } from '../../constants/typography';
+import { useFontScale } from '../../contexts/FontScaleContext';
+import { hapticSelect } from '../../utils/haptics';
 import { getProgress, resetAllData } from '../../services/storage';
 import { resetPathProgress } from '../../services/pathProgress';
 import { resetDailyChallenge } from '../../services/dailyChallenge';
@@ -32,6 +35,7 @@ export default function ProfileScreen() {
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [nameDraft, setNameDraft] = useState('');
   const [savedPulse, setSavedPulse] = useState(false);
+  const fontScale = useFontScale();
 
   useFocusEffect(
     useCallback(() => {
@@ -165,6 +169,48 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Tamanho do texto */}
+        <View style={styles.card}>
+          <View style={styles.fontSizeHeaderRow}>
+            <Text style={styles.cardLabel}>Tamanho do texto</Text>
+            <Text style={styles.fontSizeStepLabel}>{FONT_SCALE_LABELS[fontScale.index]}</Text>
+          </View>
+          <View style={styles.fontSizeControlRow}>
+            <TouchableOpacity
+              style={[styles.fontSizeBtn, !fontScale.canDecrease && styles.fontSizeBtnDisabled]}
+              onPress={() => { hapticSelect(); fontScale.decrease(); }}
+              disabled={!fontScale.canDecrease}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={[styles.fontSizeBtnText, !fontScale.canDecrease && styles.fontSizeBtnTextDisabled]}>
+                A-
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.fontSizePreviewBox}>
+              <Text style={styles.fontSizePreviewText} numberOfLines={1} adjustsFontSizeToFit>
+                Pronto para praticar hoje?
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.fontSizeBtn, !fontScale.canIncrease && styles.fontSizeBtnDisabled]}
+              onPress={() => { hapticSelect(); fontScale.increase(); }}
+              disabled={!fontScale.canIncrease}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={[styles.fontSizeBtnText, !fontScale.canIncrease && styles.fontSizeBtnTextDisabled]}>
+                A+
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.fontSizeDotsRow}>
+            {FONT_SCALE_LABELS.map((_, i) => (
+              <View key={i} style={[styles.fontSizeDot, i === fontScale.index && styles.fontSizeDotActive]} />
+            ))}
+          </View>
+        </View>
+
         {/* Quick stats */}
         <Animated.View entering={FadeInUp.duration(250)} style={styles.statsRow}>
           <View style={styles.statBox}>
@@ -257,6 +303,34 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardLabel: { color: Colors.text, fontWeight: '700', fontSize: 14, marginBottom: 12 },
+
+  fontSizeHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  fontSizeStepLabel: { color: Colors.primaryLight, fontSize: 12, fontWeight: '700' },
+  fontSizeControlRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  fontSizeBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: Colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fontSizeBtnDisabled: { opacity: 0.35 },
+  fontSizeBtnText: { color: Colors.text, fontWeight: '800', fontSize: 15 },
+  fontSizeBtnTextDisabled: { color: Colors.textMuted },
+  fontSizePreviewBox: {
+    flex: 1,
+    backgroundColor: Colors.surface,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fontSizePreviewText: { color: Colors.text, fontWeight: '600', fontSize: 15 },
+  fontSizeDotsRow: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 12 },
+  fontSizeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.border },
+  fontSizeDotActive: { backgroundColor: Colors.primary, width: 16 },
 
   nameRow: { flexDirection: 'row', gap: 10 },
   nameInput: {

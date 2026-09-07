@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Text from './AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from 'expo-router';
 import { Colors } from '../constants/Colors';

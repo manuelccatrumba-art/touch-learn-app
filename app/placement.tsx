@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import Text from '../components/AppText';
 import { useRouter } from 'expo-router';
 import { Colors } from '../constants/Colors';
 import { PLACEMENT_QUESTIONS, estimateLevelFromScore } from '../constants/placementQuiz';

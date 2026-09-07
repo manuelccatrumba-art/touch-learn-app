@@ -4,10 +4,10 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import Text from '../../components/AppText';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { CEFRLevel, FlashCard as FlashCardType, FlashCardCategory } from '../../types';
 import { Colors } from '../../constants/Colors';

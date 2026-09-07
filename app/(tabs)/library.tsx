@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { LayoutChangeEvent, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from '../../components/AppText';
 import { LinearGradient } from 'expo-linear-gradient';
 import Reanimated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Colors } from '../../constants/Colors';

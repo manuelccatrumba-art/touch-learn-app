@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from './AppText';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from './AppText';
 import { Colors } from '../constants/Colors';
 import { hapticSuccess } from '../utils/haptics';
 

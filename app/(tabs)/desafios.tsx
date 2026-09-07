@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import Text from '../../components/AppText';
 import { useFocusEffect } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { getWeeklyLeaderboard, LeaderboardEntry } from '../../services/leaderboard';

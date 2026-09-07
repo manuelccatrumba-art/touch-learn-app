@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   Pressable,
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
+import Text from '../../components/AppText';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';

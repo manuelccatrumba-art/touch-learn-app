@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Text from '../../components/AppText';
 import { Colors } from '../../constants/Colors';
 import { CULTURE_NUGGETS, CULTURE_TYPE_LABELS, CultureType } from '../../constants/culture';
 import { CEFRLevel } from '../../types';
